@@ -7,6 +7,8 @@
  */
 export const ActionTypes = {
   TOGGLE_SERVICE: 'TOGGLE_SERVICE',
+  EXPAND_SERVICE: 'EXPAND_SERVICE',
+  COLLAPSE_SERVICE: 'COLLAPSE_SERVICE',
   SET_SIZE: 'SET_SIZE',
   TOGGLE_ADDON: 'TOGGLE_ADDON',
   REMOVE_SERVICE: 'REMOVE_SERVICE',
@@ -28,6 +30,16 @@ export const ActionTypes = {
 export const actions = {
   toggleService: (serviceSlug) => ({
     type: ActionTypes.TOGGLE_SERVICE,
+    payload: { serviceSlug }
+  }),
+  
+  expandService: (serviceSlug) => ({
+    type: ActionTypes.EXPAND_SERVICE,
+    payload: { serviceSlug }
+  }),
+  
+  collapseService: (serviceSlug) => ({
+    type: ActionTypes.COLLAPSE_SERVICE,
     payload: { serviceSlug }
   }),
   
@@ -147,7 +159,8 @@ export function createReducer(configData, initialState) {
           delete newSelections[serviceSlug];
           return {
             ...state,
-            selections: newSelections
+            selections: newSelections,
+            expandedService: state.expandedService === serviceSlug ? null : state.expandedService
           };
         } else {
           // Add service with empty selection
@@ -160,9 +173,53 @@ export function createReducer(configData, initialState) {
                 size: null,
                 addons: new Set()
               }
-            }
+            },
+            expandedService: serviceSlug // Expand the newly selected service
           };
         }
+      }
+      
+      case ActionTypes.EXPAND_SERVICE: {
+        const { serviceSlug } = action.payload;
+        const isSelected = serviceSlug in state.selections;
+        const isCurrentlyExpanded = state.expandedService === serviceSlug;
+        
+        // If already expanded, collapse it
+        if (isCurrentlyExpanded) {
+          return {
+            ...state,
+            expandedService: null
+          };
+        }
+        
+        // If not selected yet, select and expand
+        if (!isSelected) {
+          return {
+            ...state,
+            selections: {
+              ...state.selections,
+              [serviceSlug]: {
+                serviceSlug,
+                size: null,
+                addons: new Set()
+              }
+            },
+            expandedService: serviceSlug
+          };
+        }
+        
+        // If already selected, just expand
+        return {
+          ...state,
+          expandedService: serviceSlug
+        };
+      }
+      
+      case ActionTypes.COLLAPSE_SERVICE: {
+        return {
+          ...state,
+          expandedService: null
+        };
       }
       
       case ActionTypes.SET_SIZE: {

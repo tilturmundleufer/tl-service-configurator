@@ -11,6 +11,7 @@ export function createInitialState(defaultLang = 'de') {
   return {
     lang: defaultLang,
     selections: {},  // Record<serviceSlug, ServiceSelection>
+    expandedService: null, // Currently expanded service slug (only one at a time)
     lastInteractionTime: Date.now(),
     isSubmitting: false,
     submitStatus: 'idle', // 'idle' | 'success' | 'error'

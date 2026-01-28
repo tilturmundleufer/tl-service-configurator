@@ -61,6 +61,14 @@ export function createEventHandlers(rootElement, store, configData, onSubmit) {
         handleToggleService(actionElement);
         break;
         
+      case 'expand-service':
+        handleExpandService(actionElement);
+        break;
+        
+      case 'collapse-service':
+        handleCollapseService(actionElement);
+        break;
+        
       case 'set-size':
         handleSetSize(actionElement);
         break;
@@ -126,6 +134,31 @@ export function createEventHandlers(rootElement, store, configData, onSubmit) {
     
     // Clear validation errors when making changes
     store.dispatch(actions.clearValidationErrors());
+  }
+  
+  /**
+   * Handle expanding a service (clicking on header to expand/collapse)
+   * @param {Element} element - Service button element
+   */
+  function handleExpandService(element) {
+    const serviceSlug = element.dataset.service;
+    if (!serviceSlug) return;
+    
+    store.dispatch(actions.expandService(serviceSlug));
+    
+    // Clear validation errors when making changes
+    store.dispatch(actions.clearValidationErrors());
+  }
+  
+  /**
+   * Handle collapsing a service
+   * @param {Element} element - Collapse button element
+   */
+  function handleCollapseService(element) {
+    const serviceSlug = element.dataset.service;
+    if (!serviceSlug) return;
+    
+    store.dispatch(actions.collapseService(serviceSlug));
   }
   
   /**

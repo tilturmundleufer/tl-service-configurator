@@ -99,26 +99,27 @@ export function createWireframeRenderer(rootElement, store, configData) {
   function renderServiceItems(state) {
     return configData.services.map(service => {
       const isSelected = selectors.isServiceSelected(state, service.slug);
+      const isExpanded = state.expandedService === service.slug;
       const selection = state.selections[service.slug];
       const name = getLocalizedName(service, state.lang);
       const desc = state.lang === 'en' ? service.descriptionEn : service.description;
       
       return `
-        <div class="tl-service-item" data-service-item="${service.slug}">
-          <!-- Collapsed Service Button -->
-          <button class="tl-service-button ${isSelected ? 'is-expanded' : ''}" 
-                  data-action="toggle-service" 
+        <div class="tl-service-item ${isSelected ? 'is-selected' : ''}" data-service-item="${service.slug}">
+          <!-- Collapsed Service Header -->
+          <button class="tl-service-button ${isExpanded ? 'is-expanded' : ''} ${isSelected ? 'is-selected' : ''}" 
+                  data-action="expand-service" 
                   data-service="${service.slug}">
             <span class="tl-service-icon-large">${service.icon}</span>
             <div class="tl-service-info">
               <h3 class="tl-service-name-large">${name}</h3>
               <p class="tl-service-desc">${desc}</p>
             </div>
-            <span class="tl-service-arrow">→</span>
+            <span class="tl-service-arrow">${isExpanded ? '↑' : '→'}</span>
           </button>
           
           <!-- Expanded Wireframe Container -->
-          <div class="tl-wireframe-container ${isSelected ? 'is-active' : ''}" 
+          <div class="tl-wireframe-container ${isExpanded ? 'is-active' : ''}" 
                data-wireframe="${service.slug}">
             ${renderWireframeContent(service, selection, state)}
           </div>
@@ -147,7 +148,9 @@ export function createWireframeRenderer(rootElement, store, configData) {
           <span>${service.icon}</span>
           ${name}
         </h3>
-        <button class="tl-wireframe-close" data-action="remove" data-target="service:${service.slug}">×</button>
+        <button class="tl-wireframe-toggle" data-action="collapse-service" data-service="${service.slug}" title="${state.lang === 'de' ? 'Einklappen' : 'Collapse'}">
+          <span class="tl-toggle-icon">↑</span>
+        </button>
       </div>
       
       <!-- Content -->
@@ -552,8 +555,9 @@ export function createWireframeRenderer(rootElement, store, configData) {
       return;
     }
     
-    // Selections changed
-    if (newState.selections !== prevState.selections) {
+    // Selections or expanded service changed
+    if (newState.selections !== prevState.selections || 
+        newState.expandedService !== prevState.expandedService) {
       updateServiceItems(newState, prevState);
       elements.summaryContent.innerHTML = renderSummaryContent(newState);
     }
@@ -587,27 +591,37 @@ export function createWireframeRenderer(rootElement, store, configData) {
     for (const serviceSlug of allServices) {
       const wasSelected = prevState && selectors.isServiceSelected(prevState, serviceSlug);
       const isSelected = selectors.isServiceSelected(newState, serviceSlug);
+      const wasExpanded = prevState && prevState.expandedService === serviceSlug;
+      const isExpanded = newState.expandedService === serviceSlug;
       
       const serviceItem = rootElement.querySelector(`[data-service-item="${serviceSlug}"]`);
       if (!serviceItem) continue;
       
       const button = serviceItem.querySelector('.tl-service-button');
       const wireframe = serviceItem.querySelector('.tl-wireframe-container');
+      const arrow = button.querySelector('.tl-service-arrow');
       
-      if (wasSelected !== isSelected) {
-        // Toggle visibility
-        button.classList.toggle('is-expanded', isSelected);
-        wireframe.classList.toggle('is-active', isSelected);
+      // Update selected state
+      serviceItem.classList.toggle('is-selected', isSelected);
+      button.classList.toggle('is-selected', isSelected);
+      
+      // Update expanded state
+      button.classList.toggle('is-expanded', isExpanded);
+      wireframe.classList.toggle('is-active', isExpanded);
+      
+      // Update arrow
+      if (arrow) {
+        arrow.textContent = isExpanded ? '↑' : '→';
       }
       
-      if (isSelected) {
+      if (isExpanded) {
         // Check if size changed (to trigger animation)
         const prevSelection = prevState ? prevState.selections[serviceSlug] : null;
         const newSelection = newState.selections[serviceSlug];
-        const sizeChanged = !prevSelection || prevSelection.size !== newSelection.size;
-        const justSelected = !wasSelected && isSelected;
+        const sizeChanged = prevSelection && prevSelection.size !== newSelection.size;
+        const justExpanded = !wasExpanded && isExpanded;
         
-        // Only animate pages when size changes or service is newly selected with a size
+        // Only animate pages when size changes (not when just expanding)
         const animatePages = sizeChanged && newSelection.size !== null;
         
         // Update wireframe content
