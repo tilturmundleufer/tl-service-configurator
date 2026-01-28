@@ -9,6 +9,7 @@ export const ActionTypes = {
   TOGGLE_SERVICE: 'TOGGLE_SERVICE',
   EXPAND_SERVICE: 'EXPAND_SERVICE',
   COLLAPSE_SERVICE: 'COLLAPSE_SERVICE',
+  SELECT_TAB: 'SELECT_TAB',
   SET_SIZE: 'SET_SIZE',
   TOGGLE_ADDON: 'TOGGLE_ADDON',
   REMOVE_SERVICE: 'REMOVE_SERVICE',
@@ -40,6 +41,11 @@ export const actions = {
   
   collapseService: (serviceSlug) => ({
     type: ActionTypes.COLLAPSE_SERVICE,
+    payload: { serviceSlug }
+  }),
+  
+  selectTab: (serviceSlug) => ({
+    type: ActionTypes.SELECT_TAB,
     payload: { serviceSlug }
   }),
   
@@ -219,6 +225,14 @@ export function createReducer(configData, initialState) {
         return {
           ...state,
           expandedService: null
+        };
+      }
+      
+      case ActionTypes.SELECT_TAB: {
+        const { serviceSlug } = action.payload;
+        return {
+          ...state,
+          expandedService: serviceSlug
         };
       }
       

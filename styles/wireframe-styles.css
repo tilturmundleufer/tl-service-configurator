@@ -1,10 +1,194 @@
 /**
  * Wireframe Configurator Styles
- * 3D Stacking, Nested UI, Visual Representations
+ * Tab-based UI with Visual Representations
  */
 
 /* ============================================
-   Service Card - Transforms into Wireframe
+   Tab Navigation
+   ============================================ */
+.tl-tab-nav {
+  display: flex;
+  gap: var(--tl-spacing-xs);
+  padding: var(--tl-spacing-sm);
+  background: var(--tl-color-gray-100);
+  border-radius: var(--tl-radius-xl);
+  margin-bottom: var(--tl-spacing-lg);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tl-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--tl-spacing-sm);
+  padding: var(--tl-spacing-sm) var(--tl-spacing-md);
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: var(--tl-radius-lg);
+  cursor: pointer;
+  transition: all var(--tl-transition-fast);
+  white-space: nowrap;
+  font-size: var(--tl-font-size-sm);
+  color: var(--tl-color-gray-600);
+}
+
+.tl-tab:hover {
+  background: var(--tl-color-white);
+  color: var(--tl-color-gray-800);
+}
+
+.tl-tab.is-active {
+  background: var(--tl-color-white);
+  border-color: var(--tl-color-primary);
+  color: var(--tl-color-primary-dark);
+  box-shadow: var(--tl-shadow-sm);
+}
+
+.tl-tab.is-selected {
+  background: var(--tl-color-primary-alpha);
+}
+
+.tl-tab.is-selected.is-active {
+  background: var(--tl-color-white);
+}
+
+.tl-tab-icon {
+  font-size: 1.2rem;
+}
+
+.tl-tab-name {
+  font-weight: 500;
+}
+
+.tl-tab-check {
+  color: var(--tl-color-success);
+  font-weight: bold;
+}
+
+/* ============================================
+   Tab Content Panel
+   ============================================ */
+.tl-tab-content {
+  background: var(--tl-glass-bg);
+  backdrop-filter: blur(var(--tl-glass-blur));
+  border: 2px solid var(--tl-color-primary);
+  border-radius: var(--tl-radius-xl);
+  padding: var(--tl-spacing-lg);
+  box-shadow: var(--tl-shadow-glow);
+  min-height: 400px;
+}
+
+.tl-tab-panel {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Service Header in Tab */
+.tl-service-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--tl-spacing-md);
+  margin-bottom: var(--tl-spacing-lg);
+  border-bottom: 1px solid var(--tl-color-gray-200);
+}
+
+.tl-service-header-info {
+  display: flex;
+  align-items: center;
+  gap: var(--tl-spacing-md);
+}
+
+.tl-service-header-info .tl-service-icon-large {
+  font-size: 2.5rem;
+}
+
+.tl-service-title {
+  font-size: var(--tl-font-size-xl);
+  font-weight: 600;
+  color: var(--tl-color-gray-800);
+  margin: 0;
+}
+
+.tl-service-description {
+  font-size: var(--tl-font-size-sm);
+  color: var(--tl-color-gray-500);
+  margin: var(--tl-spacing-xs) 0 0;
+}
+
+/* Add/Remove Service Buttons */
+.tl-add-service-btn,
+.tl-remove-service-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--tl-spacing-xs);
+  padding: var(--tl-spacing-sm) var(--tl-spacing-md);
+  border-radius: var(--tl-radius-lg);
+  font-size: var(--tl-font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--tl-transition-fast);
+}
+
+.tl-add-service-btn {
+  background: var(--tl-color-primary);
+  border: none;
+  color: white;
+}
+
+.tl-add-service-btn:hover {
+  background: var(--tl-color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.tl-add-service-btn span {
+  font-size: 1.2rem;
+}
+
+.tl-remove-service-btn {
+  background: transparent;
+  border: 2px solid var(--tl-color-error);
+  color: var(--tl-color-error);
+}
+
+.tl-remove-service-btn:hover {
+  background: var(--tl-color-error-bg);
+}
+
+/* Service Placeholder (when not added) */
+.tl-service-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: var(--tl-color-gray-400);
+  text-align: center;
+}
+
+/* Service Config Layout */
+.tl-service-config {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: var(--tl-spacing-xl);
+}
+
+@media (max-width: 900px) {
+  .tl-service-config {
+    grid-template-columns: 1fr;
+  }
+  
+  .tl-tab-nav {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+}
+
+/* ============================================
+   Service Card - Legacy (keeping for compatibility)
    ============================================ */
 .tl-service-item {
   position: relative;

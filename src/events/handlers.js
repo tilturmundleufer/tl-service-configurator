@@ -69,6 +69,10 @@ export function createEventHandlers(rootElement, store, configData, onSubmit) {
         handleCollapseService(actionElement);
         break;
         
+      case 'select-tab':
+        handleSelectTab(actionElement);
+        break;
+        
       case 'set-size':
         handleSetSize(actionElement);
         break;
@@ -159,6 +163,18 @@ export function createEventHandlers(rootElement, store, configData, onSubmit) {
     if (!serviceSlug) return;
     
     store.dispatch(actions.collapseService(serviceSlug));
+  }
+  
+  /**
+   * Handle selecting a tab (just switches view, doesn't select service)
+   * @param {Element} element - Tab button element
+   */
+  function handleSelectTab(element) {
+    const serviceSlug = element.dataset.service;
+    if (!serviceSlug) return;
+    
+    // Use expandService to switch tabs (it sets expandedService)
+    store.dispatch(actions.selectTab(serviceSlug));
   }
   
   /**

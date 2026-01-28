@@ -48,7 +48,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
     const state = store.getState();
     
     rootElement.innerHTML = `
-      <div class="tl-configurator tl-wireframe-mode">
+      <div class="tl-configurator tl-wireframe-mode tl-tab-mode">
         <!-- Language Toggle -->
         <div class="tl-lang-toggle" data-lang-toggle>
           <button class="tl-lang-btn ${state.lang === 'de' ? 'is-active' : ''}" 
@@ -63,9 +63,14 @@ export function createWireframeRenderer(rootElement, store, configData) {
           <p class="tl-subtitle" data-i18n="subtitle">${t('subtitle', state.lang)}</p>
         </header>
         
-        <!-- Services Container -->
-        <section class="tl-services-container" data-services-container>
-          ${renderServiceItems(state)}
+        <!-- Tab Navigation -->
+        <nav class="tl-tab-nav" data-tab-nav>
+          ${renderServiceTabs(state)}
+        </nav>
+        
+        <!-- Tab Content Container -->
+        <section class="tl-tab-content" data-tab-content>
+          ${renderTabContent(state)}
         </section>
         
         <!-- Summary Panel -->
@@ -92,72 +97,99 @@ export function createWireframeRenderer(rootElement, store, configData) {
   }
   
   /**
-   * Render all service items (buttons + wireframe containers)
+   * Render service tabs navigation
    * @param {Object} state - Current state
    * @returns {string} HTML string
    */
-  function renderServiceItems(state) {
+  function renderServiceTabs(state) {
+    const activeService = state.expandedService || configData.services[0]?.slug;
+    
     return configData.services.map(service => {
+      const isActive = activeService === service.slug;
       const isSelected = selectors.isServiceSelected(state, service.slug);
-      const isExpanded = state.expandedService === service.slug;
-      const selection = state.selections[service.slug];
       const name = getLocalizedName(service, state.lang);
-      const desc = state.lang === 'en' ? service.descriptionEn : service.description;
       
       return `
-        <div class="tl-service-item ${isSelected ? 'is-selected' : ''}" data-service-item="${service.slug}">
-          <!-- Collapsed Service Header -->
-          <button class="tl-service-button ${isExpanded ? 'is-expanded' : ''} ${isSelected ? 'is-selected' : ''}" 
-                  data-action="expand-service" 
-                  data-service="${service.slug}">
-            <span class="tl-service-icon-large">${service.icon}</span>
-            <div class="tl-service-info">
-              <h3 class="tl-service-name-large">${name}</h3>
-              <p class="tl-service-desc">${desc}</p>
-            </div>
-            <span class="tl-service-arrow">${isExpanded ? '↑' : '→'}</span>
-          </button>
-          
-          <!-- Expanded Wireframe Container -->
-          <div class="tl-wireframe-container ${isExpanded ? 'is-active' : ''}" 
-               data-wireframe="${service.slug}">
-            ${renderWireframeContent(service, selection, state)}
-          </div>
-        </div>
+        <button class="tl-tab ${isActive ? 'is-active' : ''} ${isSelected ? 'is-selected' : ''}" 
+                data-action="select-tab" 
+                data-service="${service.slug}">
+          <span class="tl-tab-icon">${service.icon}</span>
+          <span class="tl-tab-name">${name}</span>
+          ${isSelected ? '<span class="tl-tab-check">✓</span>' : ''}
+        </button>
       `;
     }).join('');
   }
   
   /**
-   * Render wireframe content for a service
+   * Render the content for the active tab
+   * @param {Object} state - Current state
+   * @returns {string} HTML string
+   */
+  function renderTabContent(state) {
+    const activeServiceSlug = state.expandedService || configData.services[0]?.slug;
+    const service = configData.services.find(s => s.slug === activeServiceSlug);
+    
+    if (!service) return '';
+    
+    const isSelected = selectors.isServiceSelected(state, service.slug);
+    const selection = state.selections[service.slug];
+    const name = getLocalizedName(service, state.lang);
+    const desc = state.lang === 'en' ? service.descriptionEn : service.description;
+    
+    return `
+      <div class="tl-tab-panel" data-tab-panel="${service.slug}">
+        <!-- Service Header -->
+        <div class="tl-service-header">
+          <div class="tl-service-header-info">
+            <span class="tl-service-icon-large">${service.icon}</span>
+            <div>
+              <h2 class="tl-service-title">${name}</h2>
+              <p class="tl-service-description">${desc}</p>
+            </div>
+          </div>
+          ${!isSelected ? `
+            <button class="tl-add-service-btn" data-action="toggle-service" data-service="${service.slug}">
+              <span>+</span> ${state.lang === 'de' ? 'Hinzufügen' : 'Add'}
+            </button>
+          ` : `
+            <button class="tl-remove-service-btn" data-action="remove" data-target="service:${service.slug}">
+              <span>×</span> ${state.lang === 'de' ? 'Entfernen' : 'Remove'}
+            </button>
+          `}
+        </div>
+        
+        <!-- Service Configuration (only if selected) -->
+        ${isSelected ? renderServiceConfiguration(service, selection, state) : `
+          <div class="tl-service-placeholder">
+            <p>${state.lang === 'de' 
+              ? 'Klicke auf "Hinzufügen" um diesen Service zu konfigurieren' 
+              : 'Click "Add" to configure this service'}</p>
+          </div>
+        `}
+      </div>
+    `;
+  }
+  
+  /**
+   * Render service configuration (size, addons, visual)
    * @param {Object} service - Service data
    * @param {Object} selection - Current selection
    * @param {Object} state - Current state
-   * @param {boolean} animatePages - Whether to animate pages (only on size change)
    * @returns {string} HTML string
    */
-  function renderWireframeContent(service, selection, state, animatePages = false) {
-    const name = getLocalizedName(service, state.lang);
+  function renderServiceConfiguration(service, selection, state) {
     const sizes = configData.sizes[service.slug] || [];
     const addons = configData.addons[service.slug] || [];
     
+    // Check if there are available (non-selected) addons
+    const availableAddons = addons.filter(addon => !selection.addons.has(addon.slug));
+    
     return `
-      <!-- Header -->
-      <div class="tl-wireframe-header">
-        <h3 class="tl-wireframe-title">
-          <span>${service.icon}</span>
-          ${name}
-        </h3>
-        <button class="tl-wireframe-toggle" data-action="collapse-service" data-service="${service.slug}" title="${state.lang === 'de' ? 'Einklappen' : 'Collapse'}">
-          <span class="tl-toggle-icon">↑</span>
-        </button>
-      </div>
-      
-      <!-- Content -->
-      <div class="tl-wireframe-content">
+      <div class="tl-service-config">
         <!-- Visual Stack Area -->
         <div class="tl-visual-stack-area" data-visual-area="${service.slug}">
-          ${renderVisualStack(service, selection, state, animatePages)}
+          ${renderVisualStack(service, selection, state, false)}
         </div>
         
         <!-- Options Panel -->
@@ -183,45 +215,33 @@ export function createWireframeRenderer(rootElement, store, configData) {
           </div>
           
           <!-- Addons Section (only show if size selected AND addons available) -->
-          ${(() => {
-            if (!selection || !selection.size) return '';
-            
-            // Filter out selected addons to see if any are left
-            const availableAddons = addons.filter(addon => {
-              const isSelected = selection.addons.has(addon.slug);
-              return !isSelected;
-            });
-            
-            // Hide section if no addons available
-            if (availableAddons.length === 0) return '';
-            
-            return `
-              <div class="tl-options-section">
-                <h4 class="tl-options-title" data-i18n="addons.title">${t('addons.title', state.lang)}</h4>
-                <div class="tl-addon-options" data-addon-options="${service.slug}">
-                  ${availableAddons.map(addon => {
-                    const isDisabled = addon.requiresAddon && !selection.addons.has(addon.requiresAddon);
-                    const addonName = getLocalizedName(addon, state.lang);
-                    
-                    return `
-                      <button class="tl-addon-option ${isDisabled ? 'is-disabled' : ''}"
-                              data-action="toggle-addon"
-                              data-addon="${addon.slug}"
-                              data-for-service="${service.slug}"
-                              ${isDisabled ? 'disabled' : ''}>
-                        <span class="tl-addon-option-icon">${addon.icon}</span>
-                        <span>${addonName}</span>
-                      </button>
-                    `;
-                  }).join('')}
-                </div>
+          ${selection && selection.size && availableAddons.length > 0 ? `
+            <div class="tl-options-section">
+              <h4 class="tl-options-title" data-i18n="addons.title">${t('addons.title', state.lang)}</h4>
+              <div class="tl-addon-options" data-addon-options="${service.slug}">
+                ${availableAddons.map(addon => {
+                  const isDisabled = addon.requiresAddon && !selection.addons.has(addon.requiresAddon);
+                  const addonName = getLocalizedName(addon, state.lang);
+                  
+                  return `
+                    <button class="tl-addon-option ${isDisabled ? 'is-disabled' : ''}"
+                            data-action="toggle-addon"
+                            data-addon="${addon.slug}"
+                            data-for-service="${service.slug}"
+                            ${isDisabled ? 'disabled' : ''}>
+                      <span class="tl-addon-option-icon">${addon.icon}</span>
+                      <span>${addonName}</span>
+                    </button>
+                  `;
+                }).join('')}
               </div>
-            `;
-          })()}
+            </div>
+          ` : ''}
         </div>
       </div>
     `;
   }
+  
   
   /**
    * Render the visual stack based on service type
@@ -523,7 +543,8 @@ export function createWireframeRenderer(rootElement, store, configData) {
    */
   function cacheElements() {
     elements = {
-      servicesContainer: rootElement.querySelector('[data-services-container]'),
+      tabNav: rootElement.querySelector('[data-tab-nav]'),
+      tabContent: rootElement.querySelector('[data-tab-content]'),
       summary: rootElement.querySelector('[data-summary]'),
       summaryContent: rootElement.querySelector('[data-summary-content]'),
       submitBtn: rootElement.querySelector('[data-submit-btn]'),
@@ -581,54 +602,16 @@ export function createWireframeRenderer(rootElement, store, configData) {
   }
   
   /**
-   * Update service items based on selection changes
+   * Update tabs and content based on state changes
    * @param {Object} newState - New state
    * @param {Object} prevState - Previous state
    */
   function updateServiceItems(newState, prevState) {
-    const allServices = configData.services.map(s => s.slug);
+    // Update tab navigation
+    elements.tabNav.innerHTML = renderServiceTabs(newState);
     
-    for (const serviceSlug of allServices) {
-      const wasSelected = prevState && selectors.isServiceSelected(prevState, serviceSlug);
-      const isSelected = selectors.isServiceSelected(newState, serviceSlug);
-      const wasExpanded = prevState && prevState.expandedService === serviceSlug;
-      const isExpanded = newState.expandedService === serviceSlug;
-      
-      const serviceItem = rootElement.querySelector(`[data-service-item="${serviceSlug}"]`);
-      if (!serviceItem) continue;
-      
-      const button = serviceItem.querySelector('.tl-service-button');
-      const wireframe = serviceItem.querySelector('.tl-wireframe-container');
-      const arrow = button.querySelector('.tl-service-arrow');
-      
-      // Update selected state
-      serviceItem.classList.toggle('is-selected', isSelected);
-      button.classList.toggle('is-selected', isSelected);
-      
-      // Update expanded state
-      button.classList.toggle('is-expanded', isExpanded);
-      wireframe.classList.toggle('is-active', isExpanded);
-      
-      // Update arrow
-      if (arrow) {
-        arrow.textContent = isExpanded ? '↑' : '→';
-      }
-      
-      if (isExpanded) {
-        // Check if size changed (to trigger animation)
-        const prevSelection = prevState ? prevState.selections[serviceSlug] : null;
-        const newSelection = newState.selections[serviceSlug];
-        const sizeChanged = prevSelection && prevSelection.size !== newSelection.size;
-        const justExpanded = !wasExpanded && isExpanded;
-        
-        // Only animate pages when size changes (not when just expanding)
-        const animatePages = sizeChanged && newSelection.size !== null;
-        
-        // Update wireframe content
-        const service = configData.services.find(s => s.slug === serviceSlug);
-        wireframe.innerHTML = renderWireframeContent(service, newSelection, newState, animatePages);
-      }
-    }
+    // Update tab content
+    elements.tabContent.innerHTML = renderTabContent(newState);
   }
   
   /**
