@@ -236,6 +236,7 @@
 .tl-addon-visual-wrapper {
   position: relative;
   cursor: pointer;
+  pointer-events: auto; /* Enable interactions */
 }
 
 .tl-addon-visual-wrapper .tl-addon-remove {
@@ -258,6 +259,7 @@
   transition: all var(--tl-transition-fast);
   z-index: 10;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  pointer-events: auto;
 }
 
 .tl-addon-visual-wrapper:hover .tl-addon-remove {
@@ -270,14 +272,14 @@
   transform: scale(1.1);
 }
 
-/* Bottom addon wrapper (analytics etc) */
-.tl-addon-bottom .tl-addon-visual-wrapper .tl-addon-remove {
-  top: -8px;
-  right: calc(50% - 110px + -8px); /* Align with right edge of analytics */
+/* Bottom addon wrapper (analytics etc) - not absolutely positioned */
+.tl-addon-visual-wrapper.tl-addon-analytics {
+  position: relative;
 }
 
 /* Multilingual Badge - Top right corner ON pages */
-.tl-addon-multilingual {
+.tl-addon-visual-wrapper.tl-addon-multilingual {
+  position: absolute;
   top: -5px;
   left: 195px; /* Position on top-right of front page */
   z-index: 100;
@@ -289,11 +291,11 @@
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
-/* CMS - RIGHT side, vertically centered, docking directly to pages */
-.tl-addon-cms {
+/* CMS - RIGHT side, vertically centered with the stack */
+.tl-addon-visual-wrapper.tl-addon-cms {
+  position: absolute;
   left: 220px; /* Directly touching the front page edge */
-  top: 50%;
-  transform: translateY(-50%);
+  top: 130px; /* Vertically centered (stack height ~320px / 2 = 160, minus half of CMS height) */
   z-index: 100;
 }
 
@@ -302,9 +304,10 @@
   height: auto;
 }
 
-/* SEO Badge - Bottom LEFT corner */
-.tl-addon-seo {
-  bottom: -15px;
+/* SEO Badge - Bottom LEFT corner of pages */
+.tl-addon-visual-wrapper.tl-addon-seo {
+  position: absolute;
+  bottom: 5px; /* At the very bottom of the stack */
   left: -5px; /* Position on bottom-left of front page */
   z-index: 100;
 }
@@ -683,14 +686,13 @@
     transform: scale(0.85);
   }
   
-  .tl-addon-cms,
-  .tl-addon-multilingual,
-  .tl-addon-seo {
+  .tl-addon-visual-wrapper.tl-addon-cms,
+  .tl-addon-visual-wrapper.tl-addon-multilingual,
+  .tl-addon-visual-wrapper.tl-addon-seo {
     display: none;
   }
   
-  .tl-addon-blog,
-  .tl-addon-analytics {
+  .tl-addon-visual-wrapper.tl-addon-analytics {
     position: relative;
     bottom: auto;
     left: auto;

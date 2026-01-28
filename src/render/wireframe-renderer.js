@@ -343,20 +343,31 @@ export function createWireframeRenderer(rootElement, store, configData) {
       
       const generator = getAddonSVGGenerator(addonSlug);
       if (generator) {
-        // Wrap with hoverable container and remove button
-        const html = `
-          <div class="tl-addon-visual-wrapper animate-in" style="animation-delay: 200ms;">
-            ${generator()}
-            <button class="tl-addon-remove" 
-                    data-action="remove" 
-                    data-target="addon:${serviceSlug}:${addonSlug}"
-                    title="${state.lang === 'de' ? 'Entfernen' : 'Remove'}">×</button>
-          </div>
-        `;
+        const removeTitle = state.lang === 'de' ? 'Entfernen' : 'Remove';
         
         if (bottomAddonSlugs.includes(addonSlug)) {
+          // Bottom addons (analytics) - wrapped in visual wrapper with specific class
+          const html = `
+            <div class="tl-addon-visual-wrapper tl-addon-overlay tl-addon-${addonSlug} animate-in" style="animation-delay: 200ms;">
+              ${generator()}
+              <button class="tl-addon-remove" 
+                      data-action="remove" 
+                      data-target="addon:${serviceSlug}:${addonSlug}"
+                      title="${removeTitle}">×</button>
+            </div>
+          `;
           bottomAddons.push(html);
         } else {
+          // Overlay addons - wrapper has both positioning and hover functionality
+          const html = `
+            <div class="tl-addon-visual-wrapper tl-addon-overlay tl-addon-${addonSlug} animate-in" style="animation-delay: 200ms;">
+              ${generator()}
+              <button class="tl-addon-remove" 
+                      data-action="remove" 
+                      data-target="addon:${serviceSlug}:${addonSlug}"
+                      title="${removeTitle}">×</button>
+            </div>
+          `;
           overlayAddons.push(html);
         }
       }

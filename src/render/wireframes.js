@@ -117,12 +117,10 @@ export function createBlogAddonSVG() {
  */
 export function createMultilingualAddonSVG() {
   return `
-    <div class="tl-addon-overlay tl-addon-multilingual">
-      <svg class="tl-multilingual-svg" viewBox="0 0 60 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="0" y="0" width="60" height="24" rx="4" fill="#3B82F6"/>
-        <text x="30" y="16" text-anchor="middle" fill="white" font-size="10" font-weight="600">DE | EN</text>
-      </svg>
-    </div>
+    <svg class="tl-multilingual-svg" viewBox="0 0 60 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="60" height="24" rx="4" fill="#3B82F6"/>
+      <text x="30" y="16" text-anchor="middle" fill="white" font-size="10" font-weight="600">DE | EN</text>
+    </svg>
   `;
 }
 
@@ -132,30 +130,28 @@ export function createMultilingualAddonSVG() {
  */
 export function createCMSAddonSVG() {
   return `
-    <div class="tl-addon-overlay tl-addon-cms">
-      <svg class="tl-cms-svg" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Connection line -->
-        <path d="M0 30 L30 30" stroke="#8B5CF6" stroke-width="2" stroke-dasharray="4 2"/>
-        
-        <!-- CMS Collection Icon -->
-        <rect x="30" y="5" width="65" height="50" rx="6" fill="#F5F3FF" stroke="#8B5CF6" stroke-width="2"/>
-        
-        <!-- Collection items -->
-        <rect x="38" y="13" width="49" height="10" rx="2" fill="#DDD6FE"/>
-        <rect x="38" y="27" width="49" height="10" rx="2" fill="#DDD6FE"/>
-        <rect x="38" y="41" width="49" height="10" rx="2" fill="#DDD6FE"/>
-        
-        <!-- Database icon -->
-        <circle cx="44" cy="18" r="3" fill="#8B5CF6"/>
-        <circle cx="44" cy="32" r="3" fill="#8B5CF6"/>
-        <circle cx="44" cy="46" r="3" fill="#8B5CF6"/>
-        
-        <!-- Lines representing data -->
-        <rect x="50" y="16" width="30" height="4" rx="1" fill="#A78BFA"/>
-        <rect x="50" y="30" width="25" height="4" rx="1" fill="#A78BFA"/>
-        <rect x="50" y="44" width="32" height="4" rx="1" fill="#A78BFA"/>
-      </svg>
-    </div>
+    <svg class="tl-cms-svg" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Connection line -->
+      <path d="M0 30 L30 30" stroke="#8B5CF6" stroke-width="2" stroke-dasharray="4 2"/>
+      
+      <!-- CMS Collection Icon -->
+      <rect x="30" y="5" width="65" height="50" rx="6" fill="#F5F3FF" stroke="#8B5CF6" stroke-width="2"/>
+      
+      <!-- Collection items -->
+      <rect x="38" y="13" width="49" height="10" rx="2" fill="#DDD6FE"/>
+      <rect x="38" y="27" width="49" height="10" rx="2" fill="#DDD6FE"/>
+      <rect x="38" y="41" width="49" height="10" rx="2" fill="#DDD6FE"/>
+      
+      <!-- Database icon -->
+      <circle cx="44" cy="18" r="3" fill="#8B5CF6"/>
+      <circle cx="44" cy="32" r="3" fill="#8B5CF6"/>
+      <circle cx="44" cy="46" r="3" fill="#8B5CF6"/>
+      
+      <!-- Lines representing data -->
+      <rect x="50" y="16" width="30" height="4" rx="1" fill="#A78BFA"/>
+      <rect x="50" y="30" width="25" height="4" rx="1" fill="#A78BFA"/>
+      <rect x="50" y="44" width="32" height="4" rx="1" fill="#A78BFA"/>
+    </svg>
   `;
 }
 
@@ -165,20 +161,18 @@ export function createCMSAddonSVG() {
  */
 export function createSEOAddonSVG() {
   return `
-    <div class="tl-addon-overlay tl-addon-seo">
-      <svg class="tl-seo-svg" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Search icon background -->
-        <circle cx="25" cy="25" r="24" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2"/>
-        
-        <!-- Magnifying glass -->
-        <circle cx="22" cy="22" r="10" fill="none" stroke="#F59E0B" stroke-width="3"/>
-        <line x1="29" y1="29" x2="38" y2="38" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
-        
-        <!-- #1 badge -->
-        <circle cx="38" cy="12" r="10" fill="#22C55E"/>
-        <text x="38" y="16" text-anchor="middle" fill="white" font-size="10" font-weight="700">#1</text>
-      </svg>
-    </div>
+    <svg class="tl-seo-svg" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Search icon background -->
+      <circle cx="25" cy="25" r="24" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2"/>
+      
+      <!-- Magnifying glass -->
+      <circle cx="22" cy="22" r="10" fill="none" stroke="#F59E0B" stroke-width="3"/>
+      <line x1="29" y1="29" x2="38" y2="38" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
+      
+      <!-- #1 badge -->
+      <circle cx="38" cy="12" r="10" fill="#22C55E"/>
+      <text x="38" y="16" text-anchor="middle" fill="white" font-size="10" font-weight="700">#1</text>
+    </svg>
   `;
 }
 
@@ -188,38 +182,36 @@ export function createSEOAddonSVG() {
  */
 export function createAnalyticsAddonSVG() {
   return `
-    <div class="tl-addon-overlay tl-addon-analytics">
-      <svg class="tl-analytics-svg" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Dashboard background -->
-        <rect x="0" y="0" width="200" height="80" rx="6" fill="#F8FAFC" stroke="#64748B" stroke-width="1"/>
-        
-        <!-- Title -->
-        <rect x="8" y="8" width="60" height="8" rx="2" fill="#64748B"/>
-        
-        <!-- Chart 1 - Bar chart -->
-        <rect x="8" y="24" width="55" height="48" rx="4" fill="#E2E8F0"/>
-        <rect x="14" y="50" width="8" height="16" rx="1" fill="#3B82F6"/>
-        <rect x="26" y="40" width="8" height="26" rx="1" fill="#3B82F6"/>
-        <rect x="38" y="32" width="8" height="34" rx="1" fill="#3B82F6"/>
-        <rect x="50" y="44" width="8" height="22" rx="1" fill="#3B82F6"/>
-        
-        <!-- Chart 2 - Line chart -->
-        <rect x="72" y="24" width="55" height="48" rx="4" fill="#E2E8F0"/>
-        <polyline points="78,60 90,50 102,55 114,40 120,45" fill="none" stroke="#22C55E" stroke-width="2"/>
-        <circle cx="78" cy="60" r="3" fill="#22C55E"/>
-        <circle cx="90" cy="50" r="3" fill="#22C55E"/>
-        <circle cx="102" cy="55" r="3" fill="#22C55E"/>
-        <circle cx="114" cy="40" r="3" fill="#22C55E"/>
-        <circle cx="120" cy="45" r="3" fill="#22C55E"/>
-        
-        <!-- Stats boxes -->
-        <rect x="136" y="24" width="56" height="20" rx="4" fill="#DBEAFE"/>
-        <text x="164" y="38" text-anchor="middle" fill="#3B82F6" font-size="10" font-weight="600">1,234</text>
-        
-        <rect x="136" y="52" width="56" height="20" rx="4" fill="#DCFCE7"/>
-        <text x="164" y="66" text-anchor="middle" fill="#22C55E" font-size="10" font-weight="600">+24%</text>
-      </svg>
-    </div>
+    <svg class="tl-analytics-svg" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Dashboard background -->
+      <rect x="0" y="0" width="200" height="80" rx="6" fill="#F8FAFC" stroke="#64748B" stroke-width="1"/>
+      
+      <!-- Title -->
+      <rect x="8" y="8" width="60" height="8" rx="2" fill="#64748B"/>
+      
+      <!-- Chart 1 - Bar chart -->
+      <rect x="8" y="24" width="55" height="48" rx="4" fill="#E2E8F0"/>
+      <rect x="14" y="50" width="8" height="16" rx="1" fill="#3B82F6"/>
+      <rect x="26" y="40" width="8" height="26" rx="1" fill="#3B82F6"/>
+      <rect x="38" y="32" width="8" height="34" rx="1" fill="#3B82F6"/>
+      <rect x="50" y="44" width="8" height="22" rx="1" fill="#3B82F6"/>
+      
+      <!-- Chart 2 - Line chart -->
+      <rect x="72" y="24" width="55" height="48" rx="4" fill="#E2E8F0"/>
+      <polyline points="78,60 90,50 102,55 114,40 120,45" fill="none" stroke="#22C55E" stroke-width="2"/>
+      <circle cx="78" cy="60" r="3" fill="#22C55E"/>
+      <circle cx="90" cy="50" r="3" fill="#22C55E"/>
+      <circle cx="102" cy="55" r="3" fill="#22C55E"/>
+      <circle cx="114" cy="40" r="3" fill="#22C55E"/>
+      <circle cx="120" cy="45" r="3" fill="#22C55E"/>
+      
+      <!-- Stats boxes -->
+      <rect x="136" y="24" width="56" height="20" rx="4" fill="#DBEAFE"/>
+      <text x="164" y="38" text-anchor="middle" fill="#3B82F6" font-size="10" font-weight="600">1,234</text>
+      
+      <rect x="136" y="52" width="56" height="20" rx="4" fill="#DCFCE7"/>
+      <text x="164" y="66" text-anchor="middle" fill="#22C55E" font-size="10" font-weight="600">+24%</text>
+    </svg>
   `;
 }
 
