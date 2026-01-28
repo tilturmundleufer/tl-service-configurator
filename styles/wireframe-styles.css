@@ -229,7 +229,51 @@
 
 .tl-addon-overlay {
   position: absolute;
-  pointer-events: none;
+  pointer-events: auto; /* Allow interaction */
+}
+
+/* Addon visual wrapper with hover remove */
+.tl-addon-visual-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.tl-addon-visual-wrapper .tl-addon-remove {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  background: var(--tl-color-error);
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 12px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all var(--tl-transition-fast);
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.tl-addon-visual-wrapper:hover .tl-addon-remove {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.tl-addon-visual-wrapper .tl-addon-remove:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+/* Bottom addon wrapper (analytics etc) */
+.tl-addon-bottom .tl-addon-visual-wrapper .tl-addon-remove {
+  top: -8px;
+  right: calc(50% - 110px + -8px); /* Align with right edge of analytics */
 }
 
 /* Multilingual Badge - Top right corner ON pages */
@@ -247,7 +291,7 @@
 
 /* CMS - RIGHT side, vertically centered, docking directly to pages */
 .tl-addon-cms {
-  left: 280px; /* Directly after the stack (220px + 60px margin) */
+  left: 220px; /* Directly touching the front page edge */
   top: 50%;
   transform: translateY(-50%);
   z-index: 100;
@@ -258,10 +302,10 @@
   height: auto;
 }
 
-/* SEO Badge - Bottom right corner, further down */
+/* SEO Badge - Bottom LEFT corner */
 .tl-addon-seo {
   bottom: -15px;
-  left: 190px; /* Position on bottom-right of front page */
+  left: -5px; /* Position on bottom-left of front page */
   z-index: 100;
 }
 
@@ -285,19 +329,19 @@
 .tl-addon-analytics::before {
   content: '';
   position: absolute;
-  top: -20px;
+  top: -30px;
   left: 50%;
   transform: translateX(-50%);
   width: 2px;
-  height: 20px;
+  height: 30px;
   background: linear-gradient(to bottom, #3B82F6, #64748B);
 }
 
-/* Horizontal connection dots */
+/* Connection dot at top of line */
 .tl-addon-analytics::after {
   content: '';
   position: absolute;
-  top: -24px;
+  top: -34px;
   left: 50%;
   transform: translateX(-50%);
   width: 8px;
@@ -313,14 +357,14 @@
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
 
-/* Bottom addons container (for Analytics) - centered under pages */
+/* Bottom addons container (for Analytics) - directly connected */
 .tl-addon-bottom {
   display: flex;
   flex-direction: column;
-  gap: var(--tl-spacing-md);
+  gap: 0;
   align-items: center;
   width: 100%;
-  margin-top: var(--tl-spacing-xl);
+  margin-top: 0; /* No gap - direct connection */
   padding-top: var(--tl-spacing-md);
 }
 

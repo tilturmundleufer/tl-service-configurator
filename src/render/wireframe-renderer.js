@@ -179,33 +179,42 @@ export function createWireframeRenderer(rootElement, store, configData) {
             </div>
           </div>
           
-          <!-- Addons Section (only show if size selected) -->
-          ${selection && selection.size ? `
-            <div class="tl-options-section">
-              <h4 class="tl-options-title" data-i18n="addons.title">${t('addons.title', state.lang)}</h4>
-              <div class="tl-addon-options" data-addon-options="${service.slug}">
-                ${addons.map(addon => {
-                  const isSelected = selection.addons.has(addon.slug);
-                  const isDisabled = addon.requiresAddon && !selection.addons.has(addon.requiresAddon);
-                  const addonName = getLocalizedName(addon, state.lang);
-                  
-                  // Hide selected addons (they appear in wireframe)
-                  if (isSelected) return '';
-                  
-                  return `
-                    <button class="tl-addon-option ${isDisabled ? 'is-disabled' : ''}"
-                            data-action="toggle-addon"
-                            data-addon="${addon.slug}"
-                            data-for-service="${service.slug}"
-                            ${isDisabled ? 'disabled' : ''}>
-                      <span class="tl-addon-option-icon">${addon.icon}</span>
-                      <span>${addonName}</span>
-                    </button>
-                  `;
-                }).join('')}
+          <!-- Addons Section (only show if size selected AND addons available) -->
+          ${(() => {
+            if (!selection || !selection.size) return '';
+            
+            // Filter out selected addons to see if any are left
+            const availableAddons = addons.filter(addon => {
+              const isSelected = selection.addons.has(addon.slug);
+              return !isSelected;
+            });
+            
+            // Hide section if no addons available
+            if (availableAddons.length === 0) return '';
+            
+            return `
+              <div class="tl-options-section">
+                <h4 class="tl-options-title" data-i18n="addons.title">${t('addons.title', state.lang)}</h4>
+                <div class="tl-addon-options" data-addon-options="${service.slug}">
+                  ${availableAddons.map(addon => {
+                    const isDisabled = addon.requiresAddon && !selection.addons.has(addon.requiresAddon);
+                    const addonName = getLocalizedName(addon, state.lang);
+                    
+                    return `
+                      <button class="tl-addon-option ${isDisabled ? 'is-disabled' : ''}"
+                              data-action="toggle-addon"
+                              data-addon="${addon.slug}"
+                              data-for-service="${service.slug}"
+                              ${isDisabled ? 'disabled' : ''}>
+                        <span class="tl-addon-option-icon">${addon.icon}</span>
+                        <span>${addonName}</span>
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
               </div>
-            </div>
-          ` : ''}
+            `;
+          })()}
         </div>
       </div>
     `;
@@ -238,7 +247,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
     
     switch (service.visualType) {
       case 'pages':
-        return renderPageStack(count, selection, addons, state, animatePages);
+        return renderPageStack(count, selection, addons, state, animatePages, service.slug);
       case 'modules':
         if (service.slug === 'automation') {
           return renderAutomationFlow(count, selection, addons, state);
@@ -251,9 +260,9 @@ export function createWireframeRenderer(rootElement, store, configData) {
         if (service.slug === 'social_media') {
           return renderSocialPosts(count, selection, addons, state);
         }
-        return renderPageStack(count, selection, addons, state, animatePages);
+        return renderPageStack(count, selection, addons, state, animatePages, service.slug);
       default:
-        return renderPageStack(count, selection, addons, state, animatePages);
+        return renderPageStack(count, selection, addons, state, animatePages, service.slug);
     }
   }
   
@@ -264,9 +273,10 @@ export function createWireframeRenderer(rootElement, store, configData) {
    * @param {Array} addons - Addon configurations
    * @param {Object} state - Current state
    * @param {boolean} animate - Whether to animate the pages
+   * @param {string} serviceSlug - The service slug
    * @returns {string} HTML string
    */
-  function renderPageStack(count, selection, addons, state, animate = false) {
+  function renderPageStack(count, selection, addons, state, animate = false, serviceSlug = 'webdesign') {
     const pageCount = Math.min(count, 10);
     const pages = [];
     const hasBlog = selection && selection.addons && selection.addons.has('blog');
@@ -282,7 +292,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
     }
     
     // Get positioned addons (overlays and bottom)
-    const { overlayAddons, bottomAddons } = renderAddonOverlays(selection, addons, state);
+    const { overlayAddons, bottomAddons } = renderAddonOverlays(selection, addons, state, serviceSlug);
     
     return `
       <div class="tl-visual-main">
@@ -306,9 +316,10 @@ export function createWireframeRenderer(rootElement, store, configData) {
    * @param {Object} selection - Current selection
    * @param {Array} addons - Addon configurations
    * @param {Object} state - Current state
+   * @param {string} serviceSlug - The service slug (for remove action)
    * @returns {Object} { overlayAddons: [], bottomAddons: [] }
    */
-  function renderAddonOverlays(selection, addons, state) {
+  function renderAddonOverlays(selection, addons, state, serviceSlug = 'webdesign') {
     const overlayAddons = [];
     const bottomAddons = [];
     
@@ -332,9 +343,14 @@ export function createWireframeRenderer(rootElement, store, configData) {
       
       const generator = getAddonSVGGenerator(addonSlug);
       if (generator) {
+        // Wrap with hoverable container and remove button
         const html = `
-          <div class="animate-in" style="animation-delay: 200ms;">
+          <div class="tl-addon-visual-wrapper animate-in" style="animation-delay: 200ms;">
             ${generator()}
+            <button class="tl-addon-remove" 
+                    data-action="remove" 
+                    data-target="addon:${serviceSlug}:${addonSlug}"
+                    title="${state.lang === 'de' ? 'Entfernen' : 'Remove'}">×</button>
           </div>
         `;
         
