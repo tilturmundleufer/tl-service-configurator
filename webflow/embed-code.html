@@ -1,0 +1,241 @@
+<!--
+================================================================================
+WEBFLOW INTEGRATION GUIDE - Turm & Leufer Service Konfigurator
+================================================================================
+
+OVERVIEW:
+This document contains all the code snippets needed to integrate the 
+Service Configurator into your Webflow site.
+
+STEPS:
+1. Add CSS to Page Settings > Custom Code > Head
+2. Add Root Element to your page (Embed component)
+3. Add JavaScript to Page Settings > Custom Code > Footer (before </body>)
+4. Configure your Make.com webhook URL
+5. Publish and test
+
+================================================================================
+-->
+
+<!-- ========================================================================
+     STEP 1: CSS STYLES
+     Add this to: Page Settings > Custom Code > Inside <head> tag
+     Or: Site Settings > Custom Code > Head Code (for site-wide)
+======================================================================== -->
+
+<style>
+  /* Import the configurator styles - Option A: External CSS file */
+  /* @import url('https://your-cdn.com/configurator.css'); */
+  
+  /* Option B: Inline CSS (paste contents of styles/configurator.css here) */
+  /* Note: For production, host the CSS file on a CDN and use @import */
+</style>
+
+
+<!-- ========================================================================
+     STEP 2: ROOT ELEMENT
+     Add this as an Embed component where you want the configurator to appear
+======================================================================== -->
+
+<div data-configurator class="tl-configurator-wrapper">
+  <!-- The configurator will be rendered here by JavaScript -->
+  <noscript>
+    <p style="text-align: center; padding: 40px;">
+      Bitte aktivieren Sie JavaScript, um den Konfigurator zu nutzen.
+    </p>
+  </noscript>
+</div>
+
+
+<!-- ========================================================================
+     STEP 3: JAVASCRIPT
+     Add this to: Page Settings > Custom Code > Before </body> tag
+======================================================================== -->
+
+<!-- Option A: Load from CDN (recommended for production) -->
+<script src="https://your-cdn.com/configurator.min.js"></script>
+
+<!-- Option B: Inline script (paste the bundled JS here) -->
+<!-- <script>
+  // Contents of dist/configurator.min.js go here
+</script> -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the configurator
+    if (typeof TLConfigurator !== 'undefined') {
+      var configurator = TLConfigurator.init({
+        // REQUIRED: Your Make.com webhook URL
+        webhookUrl: 'https://hook.eu1.make.com/YOUR_WEBHOOK_ID_HERE',
+        
+        // Optional: Inactivity timeout in milliseconds (default: 12000)
+        inactivityTimeout: 12000,
+        
+        // Optional: Default language 'de' or 'en' (default: 'de')
+        defaultLang: 'de',
+        
+        // Optional: Auto-detect browser language (default: true)
+        autoDetectLang: true,
+        
+        // Optional: Custom root selector (default: '[data-configurator]')
+        rootSelector: '[data-configurator]'
+      });
+      
+      // Optional: Make configurator accessible globally for debugging
+      window.configurator = configurator;
+    }
+  });
+</script>
+
+
+<!-- ========================================================================
+     WEBFLOW CMS INTEGRATION (OPTIONAL)
+     If you want to drive the configurator from Webflow CMS
+======================================================================== -->
+
+<!--
+To use Webflow CMS for configuration data:
+
+1. Create Collections in Webflow:
+   - Services (name, name_en, slug, icon, description, visual_type, order)
+   - Sizes (name, name_en, slug, service_ref, visual_count, order)
+   - Addons (name, name_en, slug, service_ref, requires_addon_ref, visual_type, icon, order)
+
+2. Create a Collection List for each, set to hidden, with JSON data attributes:
+
+<script type="application/json" id="cms-services-data">
+[
+  <!-- Collection List: Services -->
+  {{wf {"path":"slug","type":"PlainText"} }},
+  <!-- etc -->
+]
+</script>
+
+3. Modify the configurator to read from these JSON blocks instead of cms-data.js
+-->
+
+
+<!-- ========================================================================
+     CUSTOM TEMPLATES (OPTIONAL)
+     Add these to your page if you want to customize the visual appearance
+======================================================================== -->
+
+<!-- These templates override the default fallback templates -->
+<!-- Uncomment and customize as needed -->
+
+<!--
+<template data-template="service-card">
+  <button class="service-card glass-effect" data-service="" data-action="toggle-service">
+    <img data-service-icon src="" alt="" class="service-icon">
+    <span data-service-name class="service-name"></span>
+    <span class="service-check">✓</span>
+  </button>
+</template>
+
+<template data-template="summary-chip">
+  <div class="summary-chip" data-chip="">
+    <span data-chip-text></span>
+    <button class="chip-remove" data-action="remove" data-target="">×</button>
+  </div>
+</template>
+-->
+
+
+<!-- ========================================================================
+     TRACKING & ANALYTICS (OPTIONAL)
+======================================================================== -->
+
+<script>
+  // Google Analytics 4 event tracking
+  // The configurator automatically sends 'form_submit' events if gtag is available
+  
+  // Optional: Track additional events
+  document.addEventListener('DOMContentLoaded', function() {
+    var root = document.querySelector('[data-configurator]');
+    
+    if (root) {
+      // Track service selections
+      root.addEventListener('click', function(e) {
+        var serviceCard = e.target.closest('[data-service]');
+        if (serviceCard && typeof gtag === 'function') {
+          gtag('event', 'service_toggle', {
+            event_category: 'configurator',
+            event_label: serviceCard.getAttribute('data-service')
+          });
+        }
+      });
+    }
+  });
+</script>
+
+
+<!-- ========================================================================
+     MAKE.COM WEBHOOK SETUP INSTRUCTIONS
+======================================================================== -->
+
+<!--
+MAKE.COM SETUP:
+
+1. Create a new Scenario in Make.com
+
+2. Add a "Webhooks" trigger:
+   - Choose "Custom webhook"
+   - Click "Add" to create a new webhook
+   - Copy the webhook URL
+   - Paste it in the webhookUrl config above
+
+3. Test the webhook:
+   - Run the scenario once
+   - Submit a test configuration from the configurator
+   - Make.com will detect the data structure
+
+4. Add Pipedrive module:
+   - Click "+" to add a new module
+   - Search for "Pipedrive"
+   - Choose "Create a Deal" or "Create a Lead"
+   - Connect your Pipedrive account
+   - Map the fields:
+     
+     Title: {{humanSummary}}
+     
+     Person / Organization: 
+       - Create from contact fields if provided
+       - Or use custom fields
+     
+     Notes: {{rawConfig}}
+     
+     Custom Fields:
+       - Map services array to custom fields as needed
+
+5. Add error handling:
+   - Add an error handler route
+   - Connect an email notification module
+   - Send alerts to your team on failures
+
+6. Enable the scenario:
+   - Turn scheduling ON
+   - Test with a real submission
+   - Monitor the scenario for the first few submissions
+
+PAYLOAD STRUCTURE:
+{
+  "meta": {
+    "timestamp": "2026-01-28T14:30:00.000Z",
+    "sourceUrl": "https://turmleufer.de/konfigurator",
+    "lang": "de",
+    "userAgent": "...",
+    "sessionId": "uuid"
+  },
+  "services": [
+    {
+      "id": "webdesign",
+      "name": "Webdesign",
+      "size": { "id": "5_pages", "name": "5 Seiten" },
+      "addons": [{ "id": "blog", "name": "Blog" }],
+      "summary": "Webdesign: 5 Seiten + Blog"
+    }
+  ],
+  "humanSummary": "Webdesign (5 Seiten + Blog)",
+  "rawConfig": "{...serialized selections...}"
+}
+-->
