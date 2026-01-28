@@ -74,6 +74,8 @@
   border-radius: var(--tl-radius-xl);
   padding: var(--tl-spacing-lg);
   box-shadow: var(--tl-shadow-glow);
+  overflow: visible; /* Allow content to be visible */
+  min-height: auto; /* Grow with content */
 }
 
 .tl-wireframe-container.is-active {
@@ -126,7 +128,7 @@
   display: grid;
   grid-template-columns: 1fr 280px;
   gap: var(--tl-spacing-xl);
-  min-height: 400px;
+  min-height: auto; /* Grow with content */
 }
 
 @media (max-width: 900px) {
@@ -142,11 +144,12 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start;
   gap: var(--tl-spacing-xl);
   min-height: 400px;
   padding: var(--tl-spacing-xl);
+  padding-bottom: var(--tl-spacing-2xl);
 }
 
 /* Container for stack + positioned addons */
@@ -154,7 +157,8 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-right: 140px; /* Space for CMS on right */
 }
 
 /* 3D Stacked Pages/Cards */
@@ -166,7 +170,6 @@
   flex-shrink: 0;
   /* Account for 3D offset of stacked items */
   margin-right: 80px;
-  margin-left: 120px; /* Space for CMS on left */
 }
 
 .tl-stacked-item {
@@ -233,7 +236,7 @@
 /* Multilingual Badge - Top right corner ON pages */
 .tl-addon-multilingual {
   top: -5px;
-  right: 60px; /* Account for stack offset */
+  left: 195px; /* Position on top-right of front page */
   z-index: 100;
 }
 
@@ -243,9 +246,9 @@
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
-/* CMS - Left side, vertically centered, docking to pages */
+/* CMS - RIGHT side, vertically centered, docking to pages */
 .tl-addon-cms {
-  left: 0;
+  right: -20px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 100;
@@ -256,10 +259,10 @@
   height: auto;
 }
 
-/* SEO Badge - Bottom right corner ON pages */
+/* SEO Badge - Bottom right corner, further down */
 .tl-addon-seo {
-  bottom: 20px;
-  right: 55px; /* Account for stack offset */
+  bottom: -15px;
+  left: 190px; /* Position on bottom-right of front page */
   z-index: 100;
 }
 
@@ -274,7 +277,7 @@
   display: none; /* Hidden - integrated into SVG */
 }
 
-/* Analytics Dashboard - Centered below pages */
+/* Analytics Dashboard - Aligned with pages (left) */
 .tl-addon-analytics {
   /* Will be in bottom container */
 }
@@ -285,13 +288,14 @@
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
 
-/* Bottom addons container (for Analytics) */
+/* Bottom addons container (for Analytics) - aligned left with stack */
 .tl-addon-bottom {
   display: flex;
   flex-direction: column;
   gap: var(--tl-spacing-md);
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
+  padding-left: 0;
 }
 
 /* ============================================
