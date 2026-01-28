@@ -275,16 +275,25 @@ export function createWireframeRenderer(rootElement, store, configData) {
       `);
     }
     
-    // Render addon overlays
-    const addonOverlays = renderAddonOverlays(selection, addons, state);
+    // Separate side addons from bottom addons
+    const { sideAddons, bottomAddons } = renderAddonOverlays(selection, addons, state);
     
     return `
-      <div class="tl-stack-container">
-        ${pages.join('')}
+      <div class="tl-visual-main">
+        <div class="tl-stack-container">
+          ${pages.join('')}
+        </div>
+        ${sideAddons.length > 0 ? `
+          <div class="tl-addon-overlays">
+            ${sideAddons.join('')}
+          </div>
+        ` : ''}
       </div>
-      <div class="tl-addon-overlays">
-        ${addonOverlays}
-      </div>
+      ${bottomAddons.length > 0 ? `
+        <div class="tl-addon-bottom">
+          ${bottomAddons.join('')}
+        </div>
+      ` : ''}
     `;
   }
   
@@ -293,12 +302,18 @@ export function createWireframeRenderer(rootElement, store, configData) {
    * @param {Object} selection - Current selection
    * @param {Array} addons - Addon configurations
    * @param {Object} state - Current state
-   * @returns {string} HTML string
+   * @returns {Object} { sideAddons: [], bottomAddons: [] }
    */
   function renderAddonOverlays(selection, addons, state) {
-    if (!selection || !selection.addons) return '';
+    const sideAddons = [];
+    const bottomAddons = [];
     
-    const overlays = [];
+    if (!selection || !selection.addons) {
+      return { sideAddons, bottomAddons };
+    }
+    
+    // Define which addons go where
+    const bottomAddonSlugs = ['blog', 'analytics'];
     
     for (const addonSlug of selection.addons) {
       const addon = addons.find(a => a.slug === addonSlug);
@@ -306,15 +321,21 @@ export function createWireframeRenderer(rootElement, store, configData) {
       
       const generator = getAddonSVGGenerator(addonSlug);
       if (generator) {
-        overlays.push(`
+        const html = `
           <div class="animate-in" style="animation-delay: 200ms;">
             ${generator()}
           </div>
-        `);
+        `;
+        
+        if (bottomAddonSlugs.includes(addonSlug)) {
+          bottomAddons.push(html);
+        } else {
+          sideAddons.push(html);
+        }
       }
     }
     
-    return overlays.join('');
+    return { sideAddons, bottomAddons };
   }
   
   /**
