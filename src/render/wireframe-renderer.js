@@ -266,28 +266,27 @@ export function createWireframeRenderer(rootElement, store, configData) {
   function renderPageStack(count, selection, addons, state) {
     const pageCount = Math.min(count, 10);
     const pages = [];
+    const hasBlog = selection && selection.addons && selection.addons.has('blog');
     
     for (let i = 1; i <= pageCount; i++) {
       pages.push(`
         <div class="tl-stacked-item animate-in" style="animation-delay: ${(i-1) * 80}ms;">
-          ${createPageWireframeSVG(i)}
+          ${createPageWireframeSVG(i, pageCount, hasBlog)}
         </div>
       `);
     }
     
-    // Separate side addons from bottom addons
-    const { sideAddons, bottomAddons } = renderAddonOverlays(selection, addons, state);
+    // Get positioned addons (overlays and bottom)
+    const { overlayAddons, bottomAddons } = renderAddonOverlays(selection, addons, state);
     
     return `
       <div class="tl-visual-main">
         <div class="tl-stack-container">
           ${pages.join('')}
         </div>
-        ${sideAddons.length > 0 ? `
-          <div class="tl-addon-overlays">
-            ${sideAddons.join('')}
-          </div>
-        ` : ''}
+        <div class="tl-addon-overlays">
+          ${overlayAddons.join('')}
+        </div>
       </div>
       ${bottomAddons.length > 0 ? `
         <div class="tl-addon-bottom">
@@ -302,20 +301,27 @@ export function createWireframeRenderer(rootElement, store, configData) {
    * @param {Object} selection - Current selection
    * @param {Array} addons - Addon configurations
    * @param {Object} state - Current state
-   * @returns {Object} { sideAddons: [], bottomAddons: [] }
+   * @returns {Object} { overlayAddons: [], bottomAddons: [] }
    */
   function renderAddonOverlays(selection, addons, state) {
-    const sideAddons = [];
+    const overlayAddons = [];
     const bottomAddons = [];
     
     if (!selection || !selection.addons) {
-      return { sideAddons, bottomAddons };
+      return { overlayAddons, bottomAddons };
     }
     
     // Define which addons go where
-    const bottomAddonSlugs = ['blog', 'analytics'];
+    // Blog is now integrated into SVG, so skip it
+    // Analytics goes to bottom
+    // Others are overlays on/around the stack
+    const bottomAddonSlugs = ['analytics'];
+    const skipAddons = ['blog']; // Integrated into wireframe SVG
     
     for (const addonSlug of selection.addons) {
+      // Skip addons that are integrated into the SVG
+      if (skipAddons.includes(addonSlug)) continue;
+      
       const addon = addons.find(a => a.slug === addonSlug);
       if (!addon) continue;
       
@@ -330,12 +336,12 @@ export function createWireframeRenderer(rootElement, store, configData) {
         if (bottomAddonSlugs.includes(addonSlug)) {
           bottomAddons.push(html);
         } else {
-          sideAddons.push(html);
+          overlayAddons.push(html);
         }
       }
     }
     
-    return { sideAddons, bottomAddons };
+    return { overlayAddons, bottomAddons };
   }
   
   /**

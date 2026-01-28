@@ -144,18 +144,17 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: var(--tl-spacing-lg);
-  min-height: 350px;
-  padding: var(--tl-spacing-lg);
+  gap: var(--tl-spacing-xl);
+  min-height: 400px;
+  padding: var(--tl-spacing-xl);
 }
 
-/* Container for stack + side addons */
+/* Container for stack + positioned addons */
 .tl-visual-main {
+  position: relative;
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  gap: var(--tl-spacing-xl);
 }
 
 /* 3D Stacked Pages/Cards */
@@ -167,6 +166,7 @@
   flex-shrink: 0;
   /* Account for 3D offset of stacked items */
   margin-right: 80px;
+  margin-left: 120px; /* Space for CMS on left */
 }
 
 .tl-stacked-item {
@@ -214,79 +214,84 @@
 }
 
 /* ============================================
-   Addon Overlays - Right side of wireframe
+   Addon Overlays - Positioned on/around wireframe
    ============================================ */
 .tl-addon-overlays {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tl-spacing-md);
-  align-items: flex-start;
-  min-width: 120px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
 }
 
 .tl-addon-overlay {
-  position: relative;
+  position: absolute;
+  pointer-events: none;
 }
 
-/* Multilingual Badge */
+/* Multilingual Badge - Top right corner ON pages */
 .tl-addon-multilingual {
-  /* Positioned inline in the flow */
+  top: -5px;
+  right: 60px; /* Account for stack offset */
+  z-index: 100;
 }
 
 .tl-multilingual-svg {
-  width: 70px;
+  width: 60px;
   height: auto;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
-/* CMS - Connected to wireframe */
+/* CMS - Left side, vertically centered, docking to pages */
 .tl-addon-cms {
-  display: flex;
-  align-items: center;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
 }
 
 .tl-cms-svg {
-  width: 110px;
+  width: 115px;
   height: auto;
 }
 
-/* SEO Badge */
+/* SEO Badge - Bottom right corner ON pages */
 .tl-addon-seo {
-  /* Positioned inline in the flow */
+  bottom: 20px;
+  right: 55px; /* Account for stack offset */
+  z-index: 100;
 }
 
 .tl-seo-svg {
-  width: 55px;
+  width: 50px;
   height: auto;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
-/* Blog Section - Below the main visual area */
+/* Blog Section - Now integrated into wireframe SVG */
 .tl-addon-blog {
-  /* Will be in bottom addons container */
+  display: none; /* Hidden - integrated into SVG */
 }
 
-.tl-blog-svg {
-  width: 200px;
-  height: auto;
-}
-
-/* Analytics Dashboard - Below the main visual area */
+/* Analytics Dashboard - Centered below pages */
 .tl-addon-analytics {
-  /* Will be in bottom addons container */
+  /* Will be in bottom container */
 }
 
 .tl-analytics-svg {
-  width: 220px;
+  width: 240px;
   height: auto;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
 
-/* Bottom addons container (for Blog, Analytics) */
+/* Bottom addons container (for Analytics) */
 .tl-addon-bottom {
   display: flex;
   flex-direction: column;
   gap: var(--tl-spacing-md);
   align-items: center;
   width: 100%;
-  margin-top: var(--tl-spacing-lg);
 }
 
 /* ============================================

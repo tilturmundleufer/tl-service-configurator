@@ -4,10 +4,34 @@
 
 /**
  * Create the base wireframe SVG for a webpage
- * @param {number} pageNumber - Page number to display
+ * @param {number} pageNumber - Page number to display (used for stacking)
+ * @param {number} totalPages - Total number of pages selected
+ * @param {boolean} hasBlog - Whether blog addon is selected
  * @returns {string} SVG markup
  */
-export function createPageWireframeSVG(pageNumber = 1) {
+export function createPageWireframeSVG(pageNumber = 1, totalPages = 1, hasBlog = false) {
+  // Only show blog section on the front page (page 1)
+  const blogSection = (pageNumber === 1 && hasBlog) ? `
+    <!-- Blog Section -->
+    <rect x="12" y="200" width="176" height="1" fill="#22C55E"/>
+    <text x="100" y="215" text-anchor="middle" fill="#22C55E" font-size="8" font-weight="600">BLOG</text>
+    <rect x="12" y="222" width="52" height="35" rx="2" fill="#DCFCE7" stroke="#22C55E" stroke-width="1"/>
+    <rect x="70" y="222" width="52" height="35" rx="2" fill="#DCFCE7" stroke="#22C55E" stroke-width="1"/>
+    <rect x="128" y="222" width="52" height="35" rx="2" fill="#DCFCE7" stroke="#22C55E" stroke-width="1"/>
+    <rect x="16" y="226" width="44" height="20" rx="1" fill="#BBF7D0"/>
+    <rect x="16" y="250" width="35" height="4" rx="1" fill="#86EFAC"/>
+    <rect x="74" y="226" width="44" height="20" rx="1" fill="#BBF7D0"/>
+    <rect x="74" y="250" width="35" height="4" rx="1" fill="#86EFAC"/>
+    <rect x="132" y="226" width="44" height="20" rx="1" fill="#BBF7D0"/>
+    <rect x="132" y="250" width="35" height="4" rx="1" fill="#86EFAC"/>
+  ` : `
+    <!-- Content section 2 -->
+    <rect x="12" y="210" width="88" height="8" rx="2" fill="#CBD5E1"/>
+    <rect x="12" y="224" width="80" height="6" rx="2" fill="#E2E8F0"/>
+    <rect x="12" y="236" width="70" height="6" rx="2" fill="#E2E8F0"/>
+    <rect x="108" y="210" width="80" height="50" rx="4" fill="#F1F5F9"/>
+  `;
+
   return `
     <svg class="tl-wireframe-svg" viewBox="0 0 200 280" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- Page background -->
@@ -42,18 +66,16 @@ export function createPageWireframeSVG(pageNumber = 1) {
       <rect x="100" y="171" width="70" height="6" rx="2" fill="#E2E8F0"/>
       <rect x="100" y="183" width="75" height="6" rx="2" fill="#E2E8F0"/>
       
-      <!-- Content section 2 -->
-      <rect x="12" y="210" width="88" height="8" rx="2" fill="#CBD5E1"/>
-      <rect x="12" y="224" width="80" height="6" rx="2" fill="#E2E8F0"/>
-      <rect x="12" y="236" width="70" height="6" rx="2" fill="#E2E8F0"/>
-      <rect x="108" y="210" width="80" height="50" rx="4" fill="#F1F5F9"/>
+      ${blogSection}
       
       <!-- Footer -->
       <rect x="12" y="268" width="176" height="1" fill="#E2E8F0"/>
       
-      <!-- Page number badge -->
-      <circle cx="180" cy="265" r="10" fill="#3B82F6"/>
-      <text x="180" y="269" text-anchor="middle" fill="white" font-size="10" font-weight="600">${pageNumber}</text>
+      <!-- Page count badge (only on front page) -->
+      ${pageNumber === 1 ? `
+        <circle cx="180" cy="265" r="12" fill="#3B82F6"/>
+        <text x="180" y="269" text-anchor="middle" fill="white" font-size="11" font-weight="700">${totalPages}</text>
+      ` : ''}
     </svg>
   `;
 }
