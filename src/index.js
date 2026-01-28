@@ -7,7 +7,7 @@ import { CONFIG } from './config.js';
 import { getConfigData } from './data/cms-data.js';
 import { createStore, createInitialState } from './state/store.js';
 import { createReducer } from './state/reducer.js';
-import { createRenderer } from './render/renderer.js';
+import { createWireframeRenderer } from './render/wireframe-renderer.js';
 import { createEventHandlers } from './events/handlers.js';
 import { createSubmitHandler } from './submission/submit.js';
 import { detectBrowserLanguage } from './utils/i18n.js';
@@ -60,8 +60,8 @@ function init(options = {}) {
   // Create submit handler
   const submitHandler = createSubmitHandler(store, configData, config.webhookUrl);
   
-  // Create renderer
-  const renderer = createRenderer(rootElement, store, configData);
+  // Create renderer (wireframe mode)
+  const renderer = createWireframeRenderer(rootElement, store, configData);
   
   // Create event handlers
   const eventHandlers = createEventHandlers(rootElement, store, configData, submitHandler);
