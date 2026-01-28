@@ -132,9 +132,10 @@ export function createWireframeRenderer(rootElement, store, configData) {
    * @param {Object} service - Service data
    * @param {Object} selection - Current selection
    * @param {Object} state - Current state
+   * @param {boolean} animatePages - Whether to animate pages (only on size change)
    * @returns {string} HTML string
    */
-  function renderWireframeContent(service, selection, state) {
+  function renderWireframeContent(service, selection, state, animatePages = false) {
     const name = getLocalizedName(service, state.lang);
     const sizes = configData.sizes[service.slug] || [];
     const addons = configData.addons[service.slug] || [];
@@ -153,7 +154,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
       <div class="tl-wireframe-content">
         <!-- Visual Stack Area -->
         <div class="tl-visual-stack-area" data-visual-area="${service.slug}">
-          ${renderVisualStack(service, selection, state)}
+          ${renderVisualStack(service, selection, state, animatePages)}
         </div>
         
         <!-- Options Panel -->
@@ -215,9 +216,10 @@ export function createWireframeRenderer(rootElement, store, configData) {
    * @param {Object} service - Service data
    * @param {Object} selection - Current selection
    * @param {Object} state - Current state
+   * @param {boolean} animatePages - Whether to animate the pages (only on size change)
    * @returns {string} HTML string
    */
-  function renderVisualStack(service, selection, state) {
+  function renderVisualStack(service, selection, state, animatePages = false) {
     if (!selection || !selection.size) {
       // Show placeholder when no size selected
       return `
@@ -236,7 +238,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
     
     switch (service.visualType) {
       case 'pages':
-        return renderPageStack(count, selection, addons, state);
+        return renderPageStack(count, selection, addons, state, animatePages);
       case 'modules':
         if (service.slug === 'automation') {
           return renderAutomationFlow(count, selection, addons, state);
@@ -249,9 +251,9 @@ export function createWireframeRenderer(rootElement, store, configData) {
         if (service.slug === 'social_media') {
           return renderSocialPosts(count, selection, addons, state);
         }
-        return renderPageStack(count, selection, addons, state);
+        return renderPageStack(count, selection, addons, state, animatePages);
       default:
-        return renderPageStack(count, selection, addons, state);
+        return renderPageStack(count, selection, addons, state, animatePages);
     }
   }
   
@@ -261,16 +263,19 @@ export function createWireframeRenderer(rootElement, store, configData) {
    * @param {Object} selection - Current selection
    * @param {Array} addons - Addon configurations
    * @param {Object} state - Current state
+   * @param {boolean} animate - Whether to animate the pages
    * @returns {string} HTML string
    */
-  function renderPageStack(count, selection, addons, state) {
+  function renderPageStack(count, selection, addons, state, animate = false) {
     const pageCount = Math.min(count, 10);
     const pages = [];
     const hasBlog = selection && selection.addons && selection.addons.has('blog');
     
     for (let i = 1; i <= pageCount; i++) {
+      const animClass = animate ? 'animate-in' : '';
+      const animStyle = animate ? `animation-delay: ${(i-1) * 80}ms;` : '';
       pages.push(`
-        <div class="tl-stacked-item animate-in" style="animation-delay: ${(i-1) * 80}ms;">
+        <div class="tl-stacked-item ${animClass}" style="${animStyle}">
           ${createPageWireframeSVG(i, pageCount, hasBlog)}
         </div>
       `);
@@ -569,10 +574,18 @@ export function createWireframeRenderer(rootElement, store, configData) {
       }
       
       if (isSelected) {
+        // Check if size changed (to trigger animation)
+        const prevSelection = prevState ? prevState.selections[serviceSlug] : null;
+        const newSelection = newState.selections[serviceSlug];
+        const sizeChanged = !prevSelection || prevSelection.size !== newSelection.size;
+        const justSelected = !wasSelected && isSelected;
+        
+        // Only animate pages when size changes or service is newly selected with a size
+        const animatePages = sizeChanged && newSelection.size !== null;
+        
         // Update wireframe content
         const service = configData.services.find(s => s.slug === serviceSlug);
-        const selection = newState.selections[serviceSlug];
-        wireframe.innerHTML = renderWireframeContent(service, selection, newState);
+        wireframe.innerHTML = renderWireframeContent(service, newSelection, newState, animatePages);
       }
     }
   }

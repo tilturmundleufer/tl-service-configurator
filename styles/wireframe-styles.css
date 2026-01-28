@@ -73,9 +73,9 @@
   border: 2px solid var(--tl-color-primary);
   border-radius: var(--tl-radius-xl);
   padding: var(--tl-spacing-lg);
-  padding-bottom: var(--tl-spacing-xl);
+  padding-bottom: var(--tl-spacing-2xl);
   box-shadow: var(--tl-shadow-glow);
-  overflow: hidden; /* Contain content within borders */
+  overflow: visible; /* Allow content to extend if needed */
 }
 
 .tl-wireframe-container.is-active {
@@ -276,9 +276,35 @@
   display: none; /* Hidden - integrated into SVG */
 }
 
-/* Analytics Dashboard - Centered */
+/* Analytics Dashboard - Connected to pages */
 .tl-addon-analytics {
-  /* Will be in bottom container */
+  position: relative;
+}
+
+/* Connection line from pages to analytics */
+.tl-addon-analytics::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 20px;
+  background: linear-gradient(to bottom, #3B82F6, #64748B);
+}
+
+/* Horizontal connection dots */
+.tl-addon-analytics::after {
+  content: '';
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: #3B82F6;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #3B82F6;
 }
 
 .tl-analytics-svg {
@@ -287,14 +313,15 @@
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
 
-/* Bottom addons container (for Analytics) - centered */
+/* Bottom addons container (for Analytics) - centered under pages */
 .tl-addon-bottom {
   display: flex;
   flex-direction: column;
   gap: var(--tl-spacing-md);
   align-items: center;
   width: 100%;
-  margin-top: var(--tl-spacing-md);
+  margin-top: var(--tl-spacing-xl);
+  padding-top: var(--tl-spacing-md);
 }
 
 /* ============================================
