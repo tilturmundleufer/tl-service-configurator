@@ -1,33 +1,32 @@
 /**
  * Turm & Leufer Service Configurator Styles
- * 
- * Color Scheme: White/Black/Blue with Glass Effects
- * Design: Modern, Playful, "Wow Effect"
+ * Angepasst an turmundleufer.de: Weiß/Schwarz/Blau, klare Typografie
  */
 
 /* ============================================
-   CSS Custom Properties (Variables)
+   CSS Custom Properties (Variables) – Turm & Leufer Brand
    ============================================ */
 :root {
-  /* Brand Colors */
-  --tl-color-primary: #2563eb;
-  --tl-color-primary-dark: #1d4ed8;
-  --tl-color-primary-light: #3b82f6;
-  --tl-color-primary-alpha: rgba(37, 99, 235, 0.1);
+  /* Brand Colors – wie turmundleufer.de */
+  --tl-color-primary: #3B82F6;
+  --tl-color-primary-dark: #2563eb;
+  --tl-color-primary-light: #60a5fa;
+  --tl-color-primary-alpha: rgba(59, 130, 246, 0.08);
   
-  /* Neutrals */
+  /* Neutrals – klare Kontraste */
   --tl-color-white: #ffffff;
   --tl-color-black: #0f172a;
-  --tl-color-gray-50: #f8fafc;
-  --tl-color-gray-100: #f1f5f9;
-  --tl-color-gray-200: #e2e8f0;
-  --tl-color-gray-300: #cbd5e1;
-  --tl-color-gray-400: #94a3b8;
-  --tl-color-gray-500: #64748b;
-  --tl-color-gray-600: #475569;
-  --tl-color-gray-700: #334155;
-  --tl-color-gray-800: #1e293b;
-  --tl-color-gray-900: #0f172a;
+  --tl-color-gray-50: #fafafa;
+  --tl-color-gray-100: #f4f4f5;
+  --tl-color-gray-200: #e4e4e7;
+  --tl-color-gray-300: #d4d4d8;
+  --tl-color-gray-400: #a1a1aa;
+  --tl-color-gray-500: #71717a;
+  --tl-color-gray-600: #52525b;
+  --tl-color-gray-700: #3f3f46;
+  --tl-color-gray-800: #27272a;
+  --tl-color-gray-900: #18181b;
+  --tl-color-text: #212121;
   
   /* Feedback Colors */
   --tl-color-success: #10b981;
@@ -36,18 +35,18 @@
   --tl-color-error-bg: rgba(239, 68, 68, 0.1);
   --tl-color-warning: #f59e0b;
   
-  /* Glass Effect */
-  --tl-glass-bg: rgba(255, 255, 255, 0.7);
-  --tl-glass-bg-dark: rgba(255, 255, 255, 0.1);
-  --tl-glass-border: rgba(255, 255, 255, 0.3);
-  --tl-glass-blur: 12px;
+  /* Clean Background (kein starker Glass) */
+  --tl-glass-bg: #ffffff;
+  --tl-glass-bg-dark: rgba(255, 255, 255, 0.95);
+  --tl-glass-border: #e4e4e7;
+  --tl-glass-blur: 0;
   
-  /* Shadows */
-  --tl-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --tl-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  --tl-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-  --tl-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-  --tl-shadow-glow: 0 0 20px rgba(37, 99, 235, 0.3);
+  /* Dezente Schatten wie auf der Website */
+  --tl-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --tl-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --tl-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --tl-shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --tl-shadow-glow: 0 0 0 1px rgba(59, 130, 246, 0.2);
   
   /* Spacing */
   --tl-spacing-xs: 0.25rem;
@@ -93,12 +92,13 @@
 .tl-configurator {
   font-family: var(--tl-font-family);
   font-size: var(--tl-font-size-base);
-  line-height: 1.5;
-  color: var(--tl-color-gray-900);
+  line-height: 1.6;
+  color: var(--tl-color-text);
   max-width: 1400px;
   margin: 0 auto;
-  padding: var(--tl-spacing-md);
+  padding: var(--tl-spacing-lg);
   position: relative;
+  background: var(--tl-color-white);
 }
 
 /* ============================================
@@ -119,22 +119,24 @@
   min-height: 400px;
 }
 
-/* Right: same height as configurator (70vh), content scrolls */
+/* Right: Auswahl – klare Karte wie auf turmundleufer.de */
 .tl-summary-sidebar {
-  background: var(--tl-glass-bg);
-  backdrop-filter: blur(var(--tl-glass-blur));
+  background: var(--tl-color-white);
   border: 1px solid var(--tl-color-gray-200);
   border-radius: var(--tl-radius-xl);
-  padding: var(--tl-spacing-md);
+  padding: var(--tl-spacing-lg);
   display: flex;
   flex-direction: column;
   height: 70vh;
   min-height: 400px;
+  box-shadow: var(--tl-shadow-sm);
 }
 
 .tl-summary-sidebar .tl-summary-title {
-  font-size: var(--tl-font-size-base);
-  margin-bottom: var(--tl-spacing-sm);
+  font-size: var(--tl-font-size-lg);
+  font-weight: 700;
+  color: var(--tl-color-text);
+  margin-bottom: var(--tl-spacing-md);
   flex-shrink: 0;
 }
 
@@ -155,8 +157,19 @@
 .tl-summary-sidebar .tl-submit-btn {
   width: 100%;
   min-width: unset;
-  padding: var(--tl-spacing-sm) var(--tl-spacing-md);
-  font-size: var(--tl-font-size-sm);
+  padding: var(--tl-spacing-md) var(--tl-spacing-lg);
+  font-size: var(--tl-font-size-base);
+  font-weight: 600;
+  border-radius: var(--tl-radius-lg);
+  background: var(--tl-color-primary);
+  color: var(--tl-color-white);
+  border: none;
+  cursor: pointer;
+  transition: background var(--tl-transition-fast);
+}
+
+.tl-summary-sidebar .tl-submit-btn:hover:not(:disabled) {
+  background: var(--tl-color-primary-dark);
 }
 
 @media (max-width: 1024px) {
@@ -178,27 +191,27 @@
 }
 
 /* ============================================
-   Language Toggle
+   Language Toggle – dezentes Nav-Style
    ============================================ */
 .tl-lang-toggle {
   position: absolute;
   top: var(--tl-spacing-md);
   right: var(--tl-spacing-md);
   display: flex;
-  gap: var(--tl-spacing-xs);
-  background: var(--tl-glass-bg);
-  backdrop-filter: blur(var(--tl-glass-blur));
-  border: 1px solid var(--tl-glass-border);
-  border-radius: var(--tl-radius-full);
-  padding: var(--tl-spacing-xs);
+  gap: 0;
+  background: var(--tl-color-white);
+  border: 1px solid var(--tl-color-gray-200);
+  border-radius: var(--tl-radius-lg);
+  padding: 2px;
   z-index: var(--tl-z-sticky);
+  box-shadow: var(--tl-shadow-sm);
 }
 
 .tl-lang-btn {
   background: transparent;
   border: none;
   padding: var(--tl-spacing-xs) var(--tl-spacing-sm);
-  border-radius: var(--tl-radius-full);
+  border-radius: calc(var(--tl-radius-lg) - 2px);
   font-size: var(--tl-font-size-sm);
   font-weight: 500;
   color: var(--tl-color-gray-600);
@@ -784,24 +797,23 @@
   gap: var(--tl-spacing-sm);
   min-width: 250px;
   padding: var(--tl-spacing-md) var(--tl-spacing-xl);
-  background: linear-gradient(135deg, var(--tl-color-primary) 0%, var(--tl-color-primary-dark) 100%);
+  background: var(--tl-color-primary);
   border: none;
-  border-radius: var(--tl-radius-xl);
+  border-radius: var(--tl-radius-lg);
   cursor: pointer;
-  font-size: var(--tl-font-size-lg);
+  font-size: var(--tl-font-size-base);
   font-weight: 600;
   color: var(--tl-color-white);
-  transition: all var(--tl-transition-normal);
-  box-shadow: var(--tl-shadow-md);
+  transition: background var(--tl-transition-fast);
+  box-shadow: var(--tl-shadow-sm);
 }
 
 .tl-submit-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--tl-shadow-lg), var(--tl-shadow-glow);
+  background: var(--tl-color-primary-dark);
 }
 
 .tl-submit-btn:active:not(:disabled) {
-  transform: translateY(0);
+  background: var(--tl-color-primary-dark);
 }
 
 .tl-submit-btn:disabled {
