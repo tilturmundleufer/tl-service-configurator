@@ -161,22 +161,40 @@
   background: var(--tl-color-error-bg);
 }
 
-/* Service Placeholder (when not added) */
+/* Service Placeholder (when not added) - clickable, triggers Add */
 .tl-service-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 120px;
-  color: var(--tl-color-gray-400);
+  width: 100%;
+  min-height: 200px;
+  margin: 0;
+  padding: var(--tl-spacing-xl);
+  border: none;
+  background: transparent;
+  color: var(--tl-color-gray-500);
   text-align: center;
   font-size: var(--tl-font-size-sm);
+  cursor: pointer;
+  border-radius: var(--tl-radius-lg);
+  transition: background var(--tl-transition-fast), color var(--tl-transition-fast);
 }
 
-/* Service Config Layout */
+.tl-service-placeholder:hover {
+  background: var(--tl-color-gray-100);
+  color: var(--tl-color-gray-700);
+}
+
+.tl-service-placeholder span {
+  max-width: 280px;
+}
+
+/* Service Config Layout - more space for visualization */
 .tl-service-config {
   display: grid;
-  grid-template-columns: 1fr 240px;
-  gap: var(--tl-spacing-md);
+  grid-template-columns: 1fr 220px;
+  gap: var(--tl-spacing-lg);
+  align-items: start;
 }
 
 @media (max-width: 900px) {
@@ -350,8 +368,8 @@
   justify-content: flex-start;
   gap: var(--tl-spacing-xs);
   min-height: auto;
-  padding: var(--tl-spacing-xs);
-  transform: scale(0.6);
+  padding: var(--tl-spacing-sm);
+  transform: scale(0.9);
   transform-origin: top center;
 }
 
@@ -367,8 +385,8 @@
 .tl-stack-container {
   position: relative;
   perspective: 1000px;
-  width: 220px;
-  height: 260px;
+  width: 240px;
+  height: 300px;
   flex-shrink: 0;
   margin-right: 60px;
 }
@@ -483,7 +501,7 @@
 .tl-addon-visual-wrapper.tl-addon-multilingual {
   position: absolute;
   top: -5px;
-  left: 195px; /* Position on top-right of front page */
+  left: 215px; /* Top-right of front page (stack width 240px) */
   z-index: 100;
 }
 
@@ -496,8 +514,9 @@
 /* CMS - RIGHT side, vertically centered with the stack */
 .tl-addon-visual-wrapper.tl-addon-cms {
   position: absolute;
-  left: 220px; /* Directly touching the front page edge */
-  top: 130px; /* Vertically centered (stack height ~320px / 2 = 160, minus half of CMS height) */
+  left: 240px; /* Directly touching the front page edge (stack width) */
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 100;
 }
 
@@ -507,10 +526,11 @@
 }
 
 /* SEO Badge - Bottom LEFT corner of pages */
+/* SEO: bottom-left of page stack, clearly separate from Analytics below */
 .tl-addon-visual-wrapper.tl-addon-seo {
   position: absolute;
-  bottom: 5px; /* At the very bottom of the stack */
-  left: -5px; /* Position on bottom-left of front page */
+  bottom: 8px;
+  left: 0;
   z-index: 100;
 }
 
@@ -557,20 +577,20 @@
 }
 
 .tl-analytics-svg {
-  width: 220px; /* Same width as stack */
+  width: 240px; /* Same width as stack */
   height: auto;
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
 
-/* Bottom addons container (for Analytics) - directly connected */
+/* Bottom addons container (Analytics only) - below stack, centered, with connection */
 .tl-addon-bottom {
   display: flex;
   flex-direction: column;
   gap: 0;
   align-items: center;
   width: 100%;
-  margin-top: 0; /* No gap - direct connection */
-  padding-top: var(--tl-spacing-md);
+  margin-top: var(--tl-spacing-sm);
+  padding-top: var(--tl-spacing-sm);
 }
 
 /* ============================================

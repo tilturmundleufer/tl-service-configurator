@@ -161,11 +161,11 @@ export function createWireframeRenderer(rootElement, store, configData) {
         
         <!-- Service Configuration (only if selected) -->
         ${isSelected ? renderServiceConfiguration(service, selection, state) : `
-          <div class="tl-service-placeholder">
-            <p>${state.lang === 'de' 
+          <button type="button" class="tl-service-placeholder" data-action="toggle-service" data-service="${service.slug}">
+            <span>${state.lang === 'de' 
               ? 'Klicke auf "Hinzufügen" um diesen Service zu konfigurieren' 
-              : 'Click "Add" to configure this service'}</p>
-          </div>
+              : 'Click "Add" to configure this service'}</span>
+          </button>
         `}
       </div>
     `;
