@@ -111,13 +111,15 @@
   align-items: start;
 }
 
-/* Left: only as tall as content (compact) */
+/* Left: fixed height 70vh */
 .tl-configurator-main {
   display: flex;
   flex-direction: column;
+  height: 70vh;
+  min-height: 400px;
 }
 
-/* Right: grows with content; only this column can make the layout taller */
+/* Right: same height as configurator (70vh), content scrolls */
 .tl-summary-sidebar {
   background: var(--tl-glass-bg);
   backdrop-filter: blur(var(--tl-glass-blur));
@@ -126,7 +128,8 @@
   padding: var(--tl-spacing-md);
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  height: 70vh;
+  min-height: 400px;
 }
 
 .tl-summary-sidebar .tl-summary-title {
@@ -138,7 +141,6 @@
 .tl-summary-sidebar .tl-summary-content {
   flex: 1 1 auto;
   min-height: 0;
-  max-height: 70vh;
   overflow-y: auto;
   margin-bottom: var(--tl-spacing-md);
 }

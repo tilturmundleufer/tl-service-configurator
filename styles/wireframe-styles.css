@@ -76,7 +76,9 @@
   border-radius: var(--tl-radius-xl);
   padding: var(--tl-spacing-sm);
   box-shadow: var(--tl-shadow-glow);
-  overflow: visible;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .tl-tab-panel {

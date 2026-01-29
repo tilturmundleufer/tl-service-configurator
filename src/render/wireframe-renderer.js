@@ -520,17 +520,18 @@ export function createWireframeRenderer(rootElement, store, configData) {
           ${sizeName ? `<div class="tl-summary-size">📐 ${sizeName}</div>` : ''}
           ${selection.addons.size > 0 ? `
             <div class="tl-summary-addons">
-              ${[...selection.addons].map(addonSlug => {
-                const addon = addonConfig.find(a => a.slug === addonSlug);
-                if (!addon) return '';
-                const addonName = getLocalizedName(addon, state.lang);
-                return `
-                  <span class="tl-summary-addon">
-                    ${addon.icon} ${addonName}
-                    <button data-action="remove" data-target="addon:${serviceSlug}:${addonSlug}">×</button>
-                  </span>
-                `;
-              }).join('')}
+              ${addonConfig
+                .filter(a => selection.addons.has(a.slug))
+                .sort((a, b) => (a.order ?? 99) - (b.order ?? 99))
+                .map(addon => {
+                  const addonName = getLocalizedName(addon, state.lang);
+                  return `
+                    <span class="tl-summary-addon">
+                      ${addon.icon} ${addonName}
+                      <button data-action="remove" data-target="addon:${serviceSlug}:${addon.slug}">×</button>
+                    </span>
+                  `;
+                }).join('')}
             </div>
           ` : ''}
         </div>
