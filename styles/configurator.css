@@ -99,9 +99,6 @@
   margin: 0 auto;
   padding: var(--tl-spacing-md);
   position: relative;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
 /* ============================================
@@ -110,19 +107,17 @@
 .tl-main-layout {
   display: grid;
   grid-template-columns: 1fr 320px;
-  gap: var(--tl-spacing-lg);
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
+  gap: var(--tl-spacing-md);
+  align-items: start;
 }
 
+/* Left: only as tall as content (compact) */
 .tl-configurator-main {
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
 }
 
+/* Right: grows with content; only this column can make the layout taller */
 .tl-summary-sidebar {
   background: var(--tl-glass-bg);
   backdrop-filter: blur(var(--tl-glass-blur));
@@ -131,16 +126,19 @@
   padding: var(--tl-spacing-md);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  min-height: 0;
 }
 
 .tl-summary-sidebar .tl-summary-title {
   font-size: var(--tl-font-size-base);
   margin-bottom: var(--tl-spacing-sm);
+  flex-shrink: 0;
 }
 
 .tl-summary-sidebar .tl-summary-content {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 70vh;
   overflow-y: auto;
   margin-bottom: var(--tl-spacing-md);
 }
@@ -149,6 +147,7 @@
   margin-top: auto;
   padding-top: var(--tl-spacing-md);
   border-top: 1px solid var(--tl-color-gray-200);
+  flex-shrink: 0;
 }
 
 .tl-summary-sidebar .tl-submit-btn {
@@ -161,16 +160,12 @@
 @media (max-width: 1024px) {
   .tl-main-layout {
     grid-template-columns: 1fr;
-    overflow: auto;
-  }
-  
-  .tl-configurator {
-    height: auto;
-    min-height: 100vh;
+    grid-template-rows: auto auto;
   }
   
   .tl-summary-sidebar {
     order: 2;
+    align-self: auto;
   }
 }
 
