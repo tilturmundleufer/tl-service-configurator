@@ -57,41 +57,41 @@ export function createWireframeRenderer(rootElement, store, configData) {
                   data-action="set-lang" data-lang="en">EN</button>
         </div>
         
-        <!-- Header -->
-        <header class="tl-header">
-          <h1 class="tl-title" data-i18n="title">${t('title', state.lang)}</h1>
-          <p class="tl-subtitle" data-i18n="subtitle">${t('subtitle', state.lang)}</p>
-        </header>
-        
-        <!-- Tab Navigation -->
-        <nav class="tl-tab-nav" data-tab-nav>
-          ${renderServiceTabs(state)}
-        </nav>
-        
-        <!-- Tab Content Container -->
-        <section class="tl-tab-content" data-tab-content>
-          ${renderTabContent(state)}
-        </section>
-        
-        <!-- Summary Panel -->
-        <aside class="tl-summary-panel" data-summary>
-          <h3 class="tl-summary-title" data-i18n="summary.title">${t('summary.title', state.lang)}</h3>
-          <div class="tl-summary-content" data-summary-content>
-            ${renderSummaryContent(state)}
+        <!-- Main Layout: Configurator + Summary side by side -->
+        <div class="tl-main-layout">
+          <!-- Left: Configurator -->
+          <div class="tl-configurator-main">
+            <!-- Tab Navigation -->
+            <nav class="tl-tab-nav" data-tab-nav>
+              ${renderServiceTabs(state)}
+            </nav>
+            
+            <!-- Tab Content Container -->
+            <section class="tl-tab-content" data-tab-content>
+              ${renderTabContent(state)}
+            </section>
           </div>
-        </aside>
+          
+          <!-- Right: Summary Panel -->
+          <aside class="tl-summary-sidebar" data-summary>
+            <h3 class="tl-summary-title" data-i18n="summary.title">${t('summary.title', state.lang)}</h3>
+            <div class="tl-summary-content" data-summary-content>
+              ${renderSummaryContent(state)}
+            </div>
+            
+            <!-- Submit Button in Sidebar -->
+            <div class="tl-submit-section" data-submit-section>
+              <div class="tl-validation-errors" data-validation-errors></div>
+              <button class="tl-submit-btn" data-submit-btn data-action="submit">
+                <span data-i18n="submit">${t('submit', state.lang)}</span>
+              </button>
+              <div class="tl-submit-status" data-submit-status></div>
+            </div>
+          </aside>
+        </div>
         
         <!-- Suggestion Container -->
         <div class="tl-suggestion-container" data-suggestion-container></div>
-        
-        <!-- Submit Section -->
-        <section class="tl-submit-section" data-submit-section>
-          <div class="tl-validation-errors" data-validation-errors></div>
-          <button class="tl-submit-btn" data-submit-btn data-action="submit">
-            <span data-i18n="submit">${t('submit', state.lang)}</span>
-          </button>
-          <div class="tl-submit-status" data-submit-status></div>
-        </section>
       </div>
     `;
   }

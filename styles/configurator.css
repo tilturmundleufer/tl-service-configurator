@@ -95,10 +95,83 @@
   font-size: var(--tl-font-size-base);
   line-height: 1.5;
   color: var(--tl-color-gray-900);
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: var(--tl-spacing-lg);
+  padding: var(--tl-spacing-md);
   position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================
+   Main Layout - Side by Side
+   ============================================ */
+.tl-main-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--tl-spacing-lg);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tl-configurator-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tl-summary-sidebar {
+  background: var(--tl-glass-bg);
+  backdrop-filter: blur(var(--tl-glass-blur));
+  border: 1px solid var(--tl-color-gray-200);
+  border-radius: var(--tl-radius-xl);
+  padding: var(--tl-spacing-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tl-summary-sidebar .tl-summary-title {
+  font-size: var(--tl-font-size-base);
+  margin-bottom: var(--tl-spacing-sm);
+}
+
+.tl-summary-sidebar .tl-summary-content {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: var(--tl-spacing-md);
+}
+
+.tl-summary-sidebar .tl-submit-section {
+  margin-top: auto;
+  padding-top: var(--tl-spacing-md);
+  border-top: 1px solid var(--tl-color-gray-200);
+}
+
+.tl-summary-sidebar .tl-submit-btn {
+  width: 100%;
+  min-width: unset;
+  padding: var(--tl-spacing-sm) var(--tl-spacing-md);
+  font-size: var(--tl-font-size-sm);
+}
+
+@media (max-width: 1024px) {
+  .tl-main-layout {
+    grid-template-columns: 1fr;
+    overflow: auto;
+  }
+  
+  .tl-configurator {
+    height: auto;
+    min-height: 100vh;
+  }
+  
+  .tl-summary-sidebar {
+    order: 2;
+  }
 }
 
 .tl-configurator *,
@@ -146,24 +219,28 @@
 }
 
 /* ============================================
-   Header
+   Header (hidden in tab mode)
    ============================================ */
+.tl-tab-mode .tl-header {
+  display: none;
+}
+
 .tl-header {
   text-align: center;
-  margin-bottom: var(--tl-spacing-2xl);
-  padding-top: var(--tl-spacing-xl);
+  margin-bottom: var(--tl-spacing-lg);
+  padding-top: var(--tl-spacing-md);
 }
 
 .tl-title {
-  font-size: var(--tl-font-size-3xl);
+  font-size: var(--tl-font-size-2xl);
   font-weight: 700;
   color: var(--tl-color-black);
-  margin: 0 0 var(--tl-spacing-sm);
+  margin: 0 0 var(--tl-spacing-xs);
   letter-spacing: -0.02em;
 }
 
 .tl-subtitle {
-  font-size: var(--tl-font-size-lg);
+  font-size: var(--tl-font-size-sm);
   color: var(--tl-color-gray-500);
   margin: 0;
 }
