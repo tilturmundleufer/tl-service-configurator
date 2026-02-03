@@ -400,14 +400,71 @@ export const addons = {
 };
 
 /**
+ * Extra Services - Simple toggle services shown after web design is configured
+ * These don't have full configuration, just Include/Exclude toggle
+ */
+export const extraServices = [
+  {
+    slug: 'recruiting',
+    name: 'Recruiting',
+    nameEn: 'Recruiting',
+    description: 'Recruitment Strategy & Pipeline Growth',
+    descriptionEn: 'Recruitment Strategy & Pipeline Growth',
+    popular: true,
+    icon: '👥',
+    features: [
+      { de: 'Stellenanzeigen erstellen & schalten', en: 'Job ad creation & posting' },
+      { de: 'Bewerberkommunikation', en: 'Candidate communication' },
+      { de: 'Talent Pipeline & Analytics', en: 'Talent pipeline & analytics' },
+      { de: 'Employer Branding Support', en: 'Employer branding support' },
+      { de: 'Interview-Koordination', en: 'Interview coordination' },
+      { de: 'Candidate Sourcing & Outreach', en: 'Candidate sourcing & outreach' },
+      { de: 'Kandidaten-Screening', en: 'Candidate screening' }
+    ]
+  },
+  {
+    slug: 'webapps',
+    name: 'Web Application',
+    nameEn: 'Web Application',
+    description: 'Maßgeschneiderte Web-Apps & skalierbare Plattformen',
+    descriptionEn: 'Custom Web Apps & Scalable Platforms',
+    popular: true,
+    icon: '⚡',
+    features: [
+      { de: 'Frontend Features', en: 'Frontend Features' },
+      { de: 'Backend Features', en: 'Backend Features' },
+      { de: 'Third-Party Integrationen', en: 'Third-Party Integrations' },
+      { de: 'Hosting & Deployment', en: 'Hosting & Deployment' }
+    ]
+  },
+  {
+    slug: 'automation',
+    name: 'Lead/Automation',
+    nameEn: 'Lead/Automation',
+    description: 'Lead-Generierung & Workflow-Automatisierung',
+    descriptionEn: 'Lead Generation & Workflow Automation',
+    popular: true,
+    icon: '🤖',
+    features: [
+      { de: 'Lead Capture Tools', en: 'Lead Capture Tools' },
+      { de: 'Funnel-Typen', en: 'Funnel Types' },
+      { de: 'Nurture-Sequenzen', en: 'Nurture Sequences' },
+      { de: 'CRM Integration', en: 'CRM Integration' },
+      { de: 'Analytics & Reporting', en: 'Analytics & Reporting' }
+    ]
+  }
+];
+
+/**
  * Get all configuration data as a single object
  */
 export function getConfigData() {
   return {
     services: [...services].sort((a, b) => a.order - b.order),
     sizes: { ...sizes },
-    addons: { ...addons }
+    addons: { ...addons },
+    extraServices: [...extraServices]
   };
 }
 
-export default { services, sizes, addons, getConfigData };
+export default { services, sizes, addons, extraServices, getConfigData };

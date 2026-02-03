@@ -22,7 +22,12 @@ export const ActionTypes = {
   CLEAR_VALIDATION_ERRORS: 'CLEAR_VALIDATION_ERRORS',
   SHOW_SUGGESTION: 'SHOW_SUGGESTION',
   HIDE_SUGGESTION: 'HIDE_SUGGESTION',
-  RESET: 'RESET'
+  RESET: 'RESET',
+  // New step-based actions
+  NEXT_STEP: 'NEXT_STEP',
+  PREV_STEP: 'PREV_STEP',
+  SET_STEP: 'SET_STEP',
+  TOGGLE_EXTRA_SERVICE: 'TOGGLE_EXTRA_SERVICE'
 };
 
 /**
@@ -108,6 +113,25 @@ export const actions = {
   
   reset: () => ({
     type: ActionTypes.RESET
+  }),
+  
+  // Step-based actions
+  nextStep: () => ({
+    type: ActionTypes.NEXT_STEP
+  }),
+  
+  prevStep: () => ({
+    type: ActionTypes.PREV_STEP
+  }),
+  
+  setStep: (step) => ({
+    type: ActionTypes.SET_STEP,
+    payload: { step }
+  }),
+  
+  toggleExtraService: (serviceSlug) => ({
+    type: ActionTypes.TOGGLE_EXTRA_SERVICE,
+    payload: { serviceSlug }
   })
 };
 
@@ -166,7 +190,8 @@ export function createReducer(configData, initialState) {
           return {
             ...state,
             selections: newSelections,
-            expandedService: state.expandedService === serviceSlug ? null : state.expandedService
+            expandedService: state.expandedService === serviceSlug ? null : state.expandedService,
+            currentStep: serviceSlug === 'webdesign' ? 'add' : state.currentStep // Reset step if webdesign removed
           };
         } else {
           // Add service with empty selection
@@ -180,7 +205,8 @@ export function createReducer(configData, initialState) {
                 addons: new Set()
               }
             },
-            expandedService: serviceSlug // Expand the newly selected service
+            expandedService: serviceSlug, // Expand the newly selected service
+            currentStep: serviceSlug === 'webdesign' ? 'configure' : state.currentStep // Move to configure when webdesign added
           };
         }
       }
@@ -405,6 +431,49 @@ export function createReducer(configData, initialState) {
       
       case ActionTypes.RESET: {
         return { ...initialState };
+      }
+      
+      case ActionTypes.NEXT_STEP: {
+        const steps = ['add', 'configure', 'extras', 'complete'];
+        const currentIndex = steps.indexOf(state.currentStep);
+        const nextIndex = Math.min(currentIndex + 1, steps.length - 1);
+        return {
+          ...state,
+          currentStep: steps[nextIndex]
+        };
+      }
+      
+      case ActionTypes.PREV_STEP: {
+        const steps = ['add', 'configure', 'extras', 'complete'];
+        const currentIndex = steps.indexOf(state.currentStep);
+        const prevIndex = Math.max(currentIndex - 1, 0);
+        return {
+          ...state,
+          currentStep: steps[prevIndex]
+        };
+      }
+      
+      case ActionTypes.SET_STEP: {
+        return {
+          ...state,
+          currentStep: action.payload.step
+        };
+      }
+      
+      case ActionTypes.TOGGLE_EXTRA_SERVICE: {
+        const { serviceSlug } = action.payload;
+        const newExtraServices = new Set(state.extraServices);
+        
+        if (newExtraServices.has(serviceSlug)) {
+          newExtraServices.delete(serviceSlug);
+        } else {
+          newExtraServices.add(serviceSlug);
+        }
+        
+        return {
+          ...state,
+          extraServices: newExtraServices
+        };
       }
       
       default:

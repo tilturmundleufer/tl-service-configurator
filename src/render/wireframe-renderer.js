@@ -44,13 +44,13 @@ export function createWireframeRenderer(rootElement, store, configData) {
   }
   
   /**
-   * Build initial DOM structure - 3-column layout
+   * Build initial DOM structure - 2-column layout (no left tabs)
    */
   function buildInitialStructure() {
     const state = store.getState();
     
     rootElement.innerHTML = `
-      <div class="tl-configurator tl-wireframe-mode tl-tab-mode">
+      <div class="tl-configurator tl-wireframe-mode tl-step-mode">
         <!-- Language Toggle (top right) -->
         <div class="tl-lang-toggle" data-lang-toggle>
           <button class="tl-lang-btn ${state.lang === 'de' ? 'is-active' : ''}" 
@@ -59,16 +59,11 @@ export function createWireframeRenderer(rootElement, store, configData) {
                   data-action="set-lang" data-lang="en">EN</button>
         </div>
         
-        <!-- Main Layout: 3 columns - Tabs | Visualization | Options+Summary -->
-        <div class="tl-main-layout-3col">
-          <!-- Left: Vertical Tab Navigation -->
-          <nav class="tl-tab-nav-vertical" data-tab-nav>
-            ${renderServiceTabs(state)}
-          </nav>
-          
-          <!-- Center: Visualization Area -->
-          <div class="tl-configurator-visual" data-tab-content>
-            ${renderTabContent(state)}
+        <!-- Main Layout: 2 columns - Content | Sidebar -->
+        <div class="tl-main-layout-2col">
+          <!-- Left/Center: Main Content Area -->
+          <div class="tl-configurator-content" data-main-content>
+            ${renderMainContent(state)}
           </div>
           
           <!-- Right: Options + Summary Sidebar -->
@@ -76,6 +71,11 @@ export function createWireframeRenderer(rootElement, store, configData) {
             <!-- Options Panel (Size + Addons) -->
             <div class="tl-options-sidebar" data-options-sidebar>
               ${renderOptionsSidebar(state)}
+            </div>
+            
+            <!-- Optional Features (appears after step 'extras') -->
+            <div class="tl-optional-features" data-optional-features>
+              ${renderOptionalFeatures(state)}
             </div>
             
             <!-- Summary Panel -->
@@ -89,12 +89,10 @@ export function createWireframeRenderer(rootElement, store, configData) {
               </div>
             </div>
             
-            <!-- Submit Button -->
+            <!-- Action Buttons -->
             <div class="tl-submit-section" data-submit-section>
               <div class="tl-validation-errors" data-validation-errors></div>
-              <button class="tl-submit-btn" data-submit-btn data-action="submit">
-                <span data-i18n="submit">${t('submit', state.lang)}</span>
-              </button>
+              ${renderActionButtons(state)}
               <div class="tl-submit-status" data-submit-status></div>
             </div>
           </aside>
@@ -107,86 +105,260 @@ export function createWireframeRenderer(rootElement, store, configData) {
   }
   
   /**
-   * Render service tabs navigation (vertical layout)
+   * Render action buttons based on current step
    * @param {Object} state - Current state
    * @returns {string} HTML string
    */
-  function renderServiceTabs(state) {
-    const activeService = state.expandedService || configData.services[0]?.slug;
+  function renderActionButtons(state) {
+    const webdesignSelection = state.selections['webdesign'];
+    const hasSize = webdesignSelection && webdesignSelection.size;
     
-    return configData.services.map(service => {
-      const isActive = activeService === service.slug;
-      const isSelected = selectors.isServiceSelected(state, service.slug);
-      const name = getLocalizedName(service, state.lang);
-      
+    if (state.currentStep === 'add' || state.currentStep === 'configure') {
+      // Show "Continue" button, disabled until size is selected
       return `
-        <button class="tl-tab-vertical ${isActive ? 'is-active' : ''} ${isSelected ? 'is-selected' : ''}" 
-                data-action="select-tab" 
-                data-service="${service.slug}">
-          <span class="tl-tab-icon">${service.icon}</span>
-          <span class="tl-tab-name">${name}</span>
+        <button class="tl-continue-btn ${!hasSize ? 'is-disabled' : ''}" 
+                data-action="next-step" 
+                ${!hasSize ? 'disabled' : ''}>
+          <span>${state.lang === 'de' ? 'Weiter' : 'Continue'}</span>
+        </button>
+        <button class="tl-contact-btn" data-action="contact">
+          <span>${state.lang === 'de' ? 'Kontakt' : 'Contact Us'}</span>
         </button>
       `;
-    }).join('');
+    } else {
+      // Show "Submit" button in extras/complete step
+      return `
+        <button class="tl-submit-btn" data-submit-btn data-action="submit">
+          <span data-i18n="submit">${t('submit', state.lang)}</span>
+        </button>
+        <button class="tl-contact-btn" data-action="contact">
+          <span>${state.lang === 'de' ? 'Kontakt' : 'Contact Us'}</span>
+        </button>
+      `;
+    }
   }
   
   /**
-   * Render options sidebar (Size + Addons for active service)
+   * Render optional features in sidebar (for extras step)
    * @param {Object} state - Current state
    * @returns {string} HTML string
    */
-  function renderOptionsSidebar(state) {
-    const activeServiceSlug = state.expandedService || configData.services[0]?.slug;
-    const service = configData.services.find(s => s.slug === activeServiceSlug);
+  function renderOptionalFeatures(state) {
+    if (state.currentStep !== 'extras' && state.currentStep !== 'complete') {
+      return '';
+    }
     
-    if (!service) return '';
-    
-    const isSelected = selectors.isServiceSelected(state, service.slug);
-    const selection = state.selections[service.slug];
-    const sizes = configData.sizes[service.slug] || [];
-    const addons = configData.addons[service.slug] || [];
-    
-    // Check if there are available (non-selected) addons
-    const availableAddons = selection ? addons.filter(addon => !selection.addons.has(addon.slug)) : addons;
+    const extraServicesList = configData.extraServices || [];
     
     return `
-      <!-- Size Selection -->
       <div class="tl-options-section">
-        <h4 class="tl-options-title" data-i18n="size.title">${t('size.title', state.lang)}</h4>
-        <div class="tl-size-options" data-size-options="${service.slug}">
-          ${sizes.map(size => {
-            const isSelectedSize = selection && selection.size === size.slug;
-            const sizeName = getLocalizedName(size, state.lang);
-            const isDisabled = !isSelected;
+        <h4 class="tl-options-title">${state.lang === 'de' ? 'Optionale Features' : 'Optional Features'}</h4>
+        <div class="tl-optional-features-list">
+          ${extraServicesList.map(service => {
+            const isSelected = state.extraServices.has(service.slug);
+            const name = state.lang === 'en' ? service.nameEn : service.name;
             return `
-              <button class="tl-size-option ${isSelectedSize ? 'is-selected' : ''} ${isDisabled ? 'is-disabled' : ''}"
-                      data-action="set-size"
-                      data-size="${size.slug}"
-                      data-for-service="${service.slug}"
-                      ${isDisabled ? 'disabled' : ''}>
-                <span>${sizeName}</span>
-                <span class="tl-size-check">✓</span>
+              <button class="tl-optional-feature-btn ${isSelected ? 'is-selected' : ''}"
+                      data-action="toggle-extra-service"
+                      data-extra-service="${service.slug}">
+                <span>${name}</span>
+                ${isSelected ? '<span class="tl-check">✓</span>' : ''}
               </button>
             `;
           }).join('')}
         </div>
       </div>
-      
+    `;
+  }
+  
+  /**
+   * Render main content based on current step
+   * @param {Object} state - Current state
+   * @returns {string} HTML string
+   */
+  function renderMainContent(state) {
+    const webdesignService = configData.services.find(s => s.slug === 'webdesign');
+    const isWebdesignSelected = selectors.isServiceSelected(state, 'webdesign');
+    const webdesignSelection = state.selections['webdesign'];
+    const name = webdesignService ? getLocalizedName(webdesignService, state.lang) : 'Web Design';
+    const desc = webdesignService ? (state.lang === 'en' ? webdesignService.descriptionEn : webdesignService.description) : '';
+    
+    // Step 1: Add - Show large Add button
+    if (!isWebdesignSelected) {
+      return `
+        <div class="tl-main-panel">
+          <div class="tl-service-header">
+            <div class="tl-service-header-info">
+              <span class="tl-service-icon-large">${webdesignService?.icon || '🌐'}</span>
+              <div>
+                <h2 class="tl-service-title">${name}</h2>
+                <p class="tl-service-description">${desc}</p>
+              </div>
+            </div>
+          </div>
+          
+          <button type="button" class="tl-add-btn-large" data-action="toggle-service" data-service="webdesign">
+            <span>+ ${state.lang === 'de' ? 'Hinzufügen' : 'Add'}</span>
+          </button>
+        </div>
+      `;
+    }
+    
+    // Step 2: Configure - Show size cards and visualization
+    if (state.currentStep === 'add' || state.currentStep === 'configure') {
+      return `
+        <div class="tl-main-panel">
+          <div class="tl-service-header">
+            <div class="tl-service-header-info">
+              <span class="tl-service-icon-large">${webdesignService?.icon || '🌐'}</span>
+              <div>
+                <h2 class="tl-service-title">${name}</h2>
+                <p class="tl-service-description">${desc}</p>
+              </div>
+            </div>
+            <button class="tl-add-service-btn" data-action="toggle-service" data-service="webdesign">
+              <span>+</span> ${state.lang === 'de' ? 'Hinzufügen' : 'Add'}
+            </button>
+          </div>
+          
+          <!-- Size Selection as Cards -->
+          ${renderSizeCards(state)}
+          
+          <!-- Visualization (if size selected) -->
+          ${webdesignSelection?.size ? renderServiceVisualization(webdesignService, webdesignSelection, state) : ''}
+        </div>
+      `;
+    }
+    
+    // Step 3: Extras - Show "We also offer" section
+    return `
+      <div class="tl-main-panel">
+        <div class="tl-service-header">
+          <div class="tl-service-header-info">
+            <span class="tl-service-icon-large">${webdesignService?.icon || '🌐'}</span>
+            <div>
+              <h2 class="tl-service-title">${name}</h2>
+              <p class="tl-service-description">${desc}</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- We also offer section -->
+        ${renderExtrasSection(state)}
+      </div>
+    `;
+  }
+  
+  /**
+   * Render size selection as cards
+   * @param {Object} state - Current state
+   * @returns {string} HTML string
+   */
+  function renderSizeCards(state) {
+    const sizes = configData.sizes['webdesign'] || [];
+    const selection = state.selections['webdesign'];
+    const selectedSize = selection?.size;
+    
+    return `
+      <div class="tl-size-cards">
+        ${sizes.map(size => {
+          const isSelected = selectedSize === size.slug;
+          const sizeName = getLocalizedName(size, state.lang);
+          const isPopular = size.slug === '5_pages';
+          
+          return `
+            <button class="tl-size-card ${isSelected ? 'is-selected' : ''}"
+                    data-action="set-size"
+                    data-size="${size.slug}"
+                    data-for-service="webdesign">
+              ${isPopular ? `<span class="tl-badge tl-badge-popular">${state.lang === 'de' ? 'Am beliebtesten' : 'Most popular'}</span>` : ''}
+              <span class="tl-size-card-label">${sizeName}</span>
+            </button>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+  
+  /**
+   * Render "We also offer" extras section
+   * @param {Object} state - Current state
+   * @returns {string} HTML string
+   */
+  function renderExtrasSection(state) {
+    const extraServicesList = configData.extraServices || [];
+    
+    return `
+      <section class="tl-extras-section">
+        <h3 class="tl-extras-title">${state.lang === 'de' ? 'Wir bieten auch' : 'We also offer'}</h3>
+        <div class="tl-extras-cards">
+          ${extraServicesList.map(service => {
+            const isIncluded = state.extraServices.has(service.slug);
+            const name = state.lang === 'en' ? service.nameEn : service.name;
+            const desc = state.lang === 'en' ? service.descriptionEn : service.description;
+            const features = service.features.map(f => state.lang === 'en' ? f.en : f.de);
+            
+            return `
+              <div class="tl-extra-card ${isIncluded ? 'is-included' : ''}">
+                <div class="tl-extra-card-header">
+                  <h4 class="tl-extra-card-title">
+                    ${name}
+                    ${service.popular ? `<span class="tl-badge tl-badge-popular">Popular</span>` : ''}
+                  </h4>
+                  <p class="tl-extra-card-desc">${desc}</p>
+                </div>
+                <button class="tl-include-btn ${isIncluded ? 'is-included' : ''}"
+                        data-action="toggle-extra-service"
+                        data-extra-service="${service.slug}">
+                  ${isIncluded 
+                    ? (state.lang === 'de' ? 'Entfernen' : 'Remove')
+                    : (state.lang === 'de' ? 'Hinzufügen' : 'Include')}
+                </button>
+                <ul class="tl-features-list">
+                  ${features.map(f => `<li><span class="tl-check-icon">✓</span> ${f}</li>`).join('')}
+                </ul>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </section>
+    `;
+  }
+  
+  
+  /**
+   * Render options sidebar (Addons for webdesign - Size is now in main content as cards)
+   * @param {Object} state - Current state
+   * @returns {string} HTML string
+   */
+  function renderOptionsSidebar(state) {
+    const isWebdesignSelected = selectors.isServiceSelected(state, 'webdesign');
+    const selection = state.selections['webdesign'];
+    const addons = configData.addons['webdesign'] || [];
+    
+    // Don't show addons until webdesign is selected and has a size
+    if (!isWebdesignSelected || !selection?.size) {
+      return '';
+    }
+    
+    // Check if there are available (non-selected) addons
+    const availableAddons = selection ? addons.filter(addon => !selection.addons.has(addon.slug)) : addons;
+    
+    return `
       <!-- Addons Section -->
       <div class="tl-options-section">
-        <h4 class="tl-options-title" data-i18n="addons.title">${t('addons.title', state.lang)}</h4>
-        <div class="tl-addon-options" data-addon-options="${service.slug}">
+        <h4 class="tl-options-title">${state.lang === 'de' ? 'Zusätzliche Optionen' : 'Additional Options'}</h4>
+        <div class="tl-addon-options" data-addon-options="webdesign">
           ${availableAddons.length > 0 ? availableAddons.map(addon => {
-            const isDisabled = !isSelected || !selection?.size || (addon.requiresAddon && !selection.addons.has(addon.requiresAddon));
+            const isDisabled = addon.requiresAddon && !selection.addons.has(addon.requiresAddon);
             const addonName = getLocalizedName(addon, state.lang);
             
             return `
               <button class="tl-addon-option ${isDisabled ? 'is-disabled' : ''}"
                       data-action="toggle-addon"
                       data-addon="${addon.slug}"
-                      data-for-service="${service.slug}"
+                      data-for-service="webdesign"
                       ${isDisabled ? 'disabled' : ''}>
-                <span class="tl-addon-option-icon">${addon.icon}</span>
                 <span>${addonName}</span>
               </button>
             `;
@@ -196,55 +368,6 @@ export function createWireframeRenderer(rootElement, store, configData) {
     `;
   }
   
-  /**
-   * Render the content for the active tab (visualization only)
-   * @param {Object} state - Current state
-   * @returns {string} HTML string
-   */
-  function renderTabContent(state) {
-    const activeServiceSlug = state.expandedService || configData.services[0]?.slug;
-    const service = configData.services.find(s => s.slug === activeServiceSlug);
-    
-    if (!service) return '';
-    
-    const isSelected = selectors.isServiceSelected(state, service.slug);
-    const selection = state.selections[service.slug];
-    const name = getLocalizedName(service, state.lang);
-    const desc = state.lang === 'en' ? service.descriptionEn : service.description;
-    
-    return `
-      <div class="tl-tab-panel" data-tab-panel="${service.slug}">
-        <!-- Service Header -->
-        <div class="tl-service-header">
-          <div class="tl-service-header-info">
-            <span class="tl-service-icon-large">${service.icon}</span>
-            <div>
-              <h2 class="tl-service-title">${name}</h2>
-              <p class="tl-service-description">${desc}</p>
-            </div>
-          </div>
-          ${!isSelected ? `
-            <button class="tl-add-service-btn" data-action="toggle-service" data-service="${service.slug}">
-              <span>+</span> ${state.lang === 'de' ? 'Hinzufügen' : 'Add'}
-            </button>
-          ` : `
-            <button class="tl-remove-service-btn" data-action="remove" data-target="service:${service.slug}">
-              <span>×</span> ${state.lang === 'de' ? 'Entfernen' : 'Remove'}
-            </button>
-          `}
-        </div>
-        
-        <!-- Visual Area (only visualization, options in sidebar) -->
-        ${isSelected ? renderServiceVisualization(service, selection, state) : `
-          <button type="button" class="tl-service-placeholder" data-action="toggle-service" data-service="${service.slug}">
-            <span>${state.lang === 'de' 
-              ? 'Klicke auf "Hinzufügen" um diesen Service zu konfigurieren' 
-              : 'Click "Add" to configure this service'}</span>
-          </button>
-        `}
-      </div>
-    `;
-  }
   
   /**
    * Render service visualization only (options are in sidebar)
@@ -539,12 +662,16 @@ export function createWireframeRenderer(rootElement, store, configData) {
    */
   function renderSummaryContent(state) {
     const selectedServices = selectors.getSelectedServices(state);
+    const hasExtraServices = state.extraServices && state.extraServices.size > 0;
     
-    if (selectedServices.length === 0) {
+    if (selectedServices.length === 0 && !hasExtraServices) {
       return `<p class="tl-summary-empty" data-i18n="summary.empty">${t('summary.empty', state.lang)}</p>`;
     }
     
-    return selectedServices.map(serviceSlug => {
+    let html = '';
+    
+    // Render main services (webdesign)
+    html += selectedServices.map(serviceSlug => {
       const selection = state.selections[serviceSlug];
       const service = configData.services.find(s => s.slug === serviceSlug);
       if (!service) return '';
@@ -584,6 +711,31 @@ export function createWireframeRenderer(rootElement, store, configData) {
         </div>
       `;
     }).join('');
+    
+    // Render extra services
+    if (hasExtraServices) {
+      const extraServicesList = configData.extraServices || [];
+      html += [...state.extraServices].map(extraSlug => {
+        const extraService = extraServicesList.find(s => s.slug === extraSlug);
+        if (!extraService) return '';
+        
+        const name = state.lang === 'en' ? extraService.nameEn : extraService.name;
+        
+        return `
+          <div class="tl-summary-service tl-summary-extra" data-summary-extra="${extraSlug}">
+            <div class="tl-summary-service-header">
+              <div class="tl-summary-service-name">
+                <span>${extraService.icon}</span>
+                ${name}
+              </div>
+              <button class="tl-summary-remove" data-action="toggle-extra-service" data-extra-service="${extraSlug}">×</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    return html;
   }
   
   /**
@@ -591,11 +743,12 @@ export function createWireframeRenderer(rootElement, store, configData) {
    */
   function cacheElements() {
     elements = {
-      tabNav: rootElement.querySelector('[data-tab-nav]'),
-      tabContent: rootElement.querySelector('[data-tab-content]'),
+      mainContent: rootElement.querySelector('[data-main-content]'),
       optionsSidebar: rootElement.querySelector('[data-options-sidebar]'),
+      optionalFeatures: rootElement.querySelector('[data-optional-features]'),
       summary: rootElement.querySelector('[data-summary]'),
       summaryContent: rootElement.querySelector('[data-summary-content]'),
+      submitSection: rootElement.querySelector('[data-submit-section]'),
       submitBtn: rootElement.querySelector('[data-submit-btn]'),
       submitStatus: rootElement.querySelector('[data-submit-status]'),
       validationErrors: rootElement.querySelector('[data-validation-errors]'),
@@ -619,17 +772,21 @@ export function createWireframeRenderer(rootElement, store, configData) {
     // Language changed - re-render everything
     if (newState.lang !== prevState.lang) {
       updateAllTranslations(rootElement, newState.lang);
-      updateServiceItems(newState, prevState);
-      elements.summaryContent.innerHTML = renderSummaryContent(newState);
+      updateAllContent(newState);
       updateLangToggle(newState.lang);
       return;
     }
     
-    // Selections or expanded service changed
+    // Step changed - re-render main content
+    if (newState.currentStep !== prevState.currentStep) {
+      updateAllContent(newState);
+      return;
+    }
+    
+    // Selections or extra services changed
     if (newState.selections !== prevState.selections || 
-        newState.expandedService !== prevState.expandedService) {
-      updateServiceItems(newState, prevState);
-      elements.summaryContent.innerHTML = renderSummaryContent(newState);
+        newState.extraServices !== prevState.extraServices) {
+      updateAllContent(newState);
     }
     
     // Submission state changed
@@ -651,20 +808,43 @@ export function createWireframeRenderer(rootElement, store, configData) {
   }
   
   /**
-   * Update tabs and content based on state changes
-   * @param {Object} newState - New state
-   * @param {Object} prevState - Previous state
+   * Update all content based on state changes
+   * @param {Object} state - Current state
    */
-  function updateServiceItems(newState, prevState) {
-    // Update tab navigation
-    elements.tabNav.innerHTML = renderServiceTabs(newState);
-    
-    // Update tab content (visualization)
-    elements.tabContent.innerHTML = renderTabContent(newState);
+  function updateAllContent(state) {
+    // Update main content area
+    if (elements.mainContent) {
+      elements.mainContent.innerHTML = renderMainContent(state);
+    }
     
     // Update options sidebar
     if (elements.optionsSidebar) {
-      elements.optionsSidebar.innerHTML = renderOptionsSidebar(newState);
+      elements.optionsSidebar.innerHTML = renderOptionsSidebar(state);
+    }
+    
+    // Update optional features
+    if (elements.optionalFeatures) {
+      elements.optionalFeatures.innerHTML = renderOptionalFeatures(state);
+    }
+    
+    // Update summary
+    if (elements.summaryContent) {
+      elements.summaryContent.innerHTML = renderSummaryContent(state);
+    }
+    
+    // Update action buttons
+    if (elements.submitSection) {
+      const submitStatus = elements.submitSection.querySelector('[data-submit-status]');
+      const validationErrors = elements.submitSection.querySelector('[data-validation-errors]');
+      elements.submitSection.innerHTML = `
+        <div class="tl-validation-errors" data-validation-errors>${validationErrors?.innerHTML || ''}</div>
+        ${renderActionButtons(state)}
+        <div class="tl-submit-status" data-submit-status>${submitStatus?.innerHTML || ''}</div>
+      `;
+      // Re-cache the submit button
+      elements.submitBtn = elements.submitSection.querySelector('[data-submit-btn]');
+      elements.submitStatus = elements.submitSection.querySelector('[data-submit-status]');
+      elements.validationErrors = elements.submitSection.querySelector('[data-validation-errors]');
     }
   }
   

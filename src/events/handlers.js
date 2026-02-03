@@ -100,6 +100,22 @@ export function createEventHandlers(rootElement, store, configData, onSubmit) {
       case 'retry':
         handleRetry();
         break;
+        
+      case 'next-step':
+        handleNextStep();
+        break;
+        
+      case 'prev-step':
+        handlePrevStep();
+        break;
+        
+      case 'toggle-extra-service':
+        handleToggleExtraService(actionElement);
+        break;
+        
+      case 'contact':
+        handleContact();
+        break;
     }
   }
   
@@ -281,6 +297,51 @@ export function createEventHandlers(rootElement, store, configData, onSubmit) {
   function handleRetry() {
     store.dispatch(actions.setSubmitStatus('idle'));
     handleSubmit();
+  }
+  
+  /**
+   * Handle step progression (Continue button)
+   */
+  function handleNextStep() {
+    const state = store.getState();
+    
+    // Validate before moving to next step
+    if (state.currentStep === 'configure' || state.currentStep === 'add') {
+      const webdesignSelection = state.selections['webdesign'];
+      if (!webdesignSelection || !webdesignSelection.size) {
+        // Size not selected, don't proceed
+        return;
+      }
+    }
+    
+    store.dispatch(actions.nextStep());
+    store.dispatch(actions.clearValidationErrors());
+  }
+  
+  /**
+   * Handle step regression (Back button)
+   */
+  function handlePrevStep() {
+    store.dispatch(actions.prevStep());
+  }
+  
+  /**
+   * Handle extra service toggle
+   * @param {Element} element - Toggle button element
+   */
+  function handleToggleExtraService(element) {
+    const serviceSlug = element.dataset.extraService;
+    if (!serviceSlug) return;
+    
+    store.dispatch(actions.toggleExtraService(serviceSlug));
+  }
+  
+  /**
+   * Handle contact button click
+   */
+  function handleContact() {
+    // Open contact page or modal - can be customized
+    window.open('https://turmundleufer.de/kontakt', '_blank');
   }
   
   /**

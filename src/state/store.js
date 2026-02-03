@@ -12,6 +12,8 @@ export function createInitialState(defaultLang = 'de') {
     lang: defaultLang,
     selections: {},  // Record<serviceSlug, ServiceSelection>
     expandedService: null, // Currently expanded service slug (only one at a time)
+    currentStep: 'add', // 'add' | 'configure' | 'extras' | 'complete'
+    extraServices: new Set(), // Set of extra service slugs (recruiting, webapps, automation)
     lastInteractionTime: Date.now(),
     isSubmitting: false,
     submitStatus: 'idle', // 'idle' | 'success' | 'error'
