@@ -608,8 +608,8 @@
 
 /* Multilingual - Top Left of Page */
 .tl-addon-multilang-pos {
-  top: 10px;
-  left: 10px;
+  top: 2%;
+  left: 2%;
 }
 
 .tl-addon-multilang-pos .tl-multilingual-image {
@@ -620,14 +620,40 @@
 
 /* SEO - Top Right of Page */
 .tl-addon-seo-pos {
-  top: 10px;
-  right: 10px;
+  top: 2%;
+  right: 2%;
 }
 
 .tl-addon-seo-pos .tl-seo-image {
   width: 80px;
   height: auto;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* CMS - Overlays the 3 person placeholders area (middle section) */
+.tl-addon-cms-pos {
+  top: 42%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+}
+
+.tl-addon-cms-pos .tl-cms-image {
+  width: 100%;
+  height: auto;
+}
+
+/* Blog - Overlays the blog section area (bottom section) */
+.tl-addon-blog-pos {
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+}
+
+.tl-addon-blog-pos .tl-blog-image {
+  width: 100%;
+  height: auto;
 }
 
 /* Vertical Addon Sections (below page) */

@@ -310,6 +310,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
   
   /**
    * Render stacked page wireframes (for Webdesign) - Vertical layout
+   * CMS and Blog are overlays on the base image, only Analytics is appended below
    * @param {number} count - Number of pages
    * @param {Object} selection - Current selection
    * @param {Array} addons - Addon configurations
@@ -322,16 +323,19 @@ export function createWireframeRenderer(rootElement, store, configData) {
     const selectedAddons = selection && selection.addons ? selection.addons : new Set();
     const removeTitle = state.lang === 'de' ? 'Entfernen' : 'Remove';
     
-    // Build vertical stack of visual elements
-    const visualElements = [];
-    
-    // 1. Main Page with positioned overlays (Multilingual top-left, SEO top-right)
     const hasMultilang = selectedAddons.has('multilang');
     const hasSeo = selectedAddons.has('seo');
+    const hasCms = selectedAddons.has('cms');
+    const hasBlog = selectedAddons.has('blog');
+    const hasAnalytics = selectedAddons.has('analytics');
     
-    visualElements.push(`
+    // Main page with all positioned overlays (Multilingual, SEO, CMS, Blog)
+    const mainPageHtml = `
       <div class="tl-visual-page-wrapper">
-        <!-- Positioned overlays on the page -->
+        <!-- Main Page Image (base) -->
+        <img src="${ADDON_IMAGES.initialPage}" alt="Page Preview" class="tl-main-page-image ${animate ? 'animate-in' : ''}" loading="lazy" />
+        
+        <!-- Positioned overlays ON the page -->
         ${hasMultilang ? `
           <div class="tl-addon-positioned tl-addon-multilang-pos animate-in">
             <img src="${ADDON_IMAGES.multilang}" alt="Multilingual" class="tl-addon-image tl-multilingual-image" loading="lazy" />
@@ -344,44 +348,33 @@ export function createWireframeRenderer(rootElement, store, configData) {
             <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:seo" title="${removeTitle}">×</button>
           </div>
         ` : ''}
-        <!-- Main Page Image -->
-        <img src="${ADDON_IMAGES.initialPage}" alt="Page Preview" class="tl-main-page-image ${animate ? 'animate-in' : ''}" loading="lazy" />
+        ${hasCms ? `
+          <div class="tl-addon-positioned tl-addon-cms-pos animate-in">
+            <img src="${ADDON_IMAGES.cms}" alt="CMS Integration" class="tl-addon-image tl-cms-image" loading="lazy" />
+            <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:cms" title="${removeTitle}">×</button>
+          </div>
+        ` : ''}
+        ${hasBlog ? `
+          <div class="tl-addon-positioned tl-addon-blog-pos animate-in">
+            <img src="${ADDON_IMAGES.blog}" alt="Blog Section" class="tl-addon-image tl-blog-image" loading="lazy" />
+            <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:blog" title="${removeTitle}">×</button>
+          </div>
+        ` : ''}
       </div>
-    `);
+    `;
     
-    // 2. CMS Integration (below page, with connection visualization)
-    if (selectedAddons.has('cms')) {
-      visualElements.push(`
-        <div class="tl-addon-section-vertical tl-addon-cms-section animate-in">
-          <img src="${ADDON_IMAGES.cms}" alt="CMS Integration" class="tl-addon-image tl-cms-image" loading="lazy" />
-          <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:cms" title="${removeTitle}">×</button>
-        </div>
-      `);
-    }
-    
-    // 3. Blog Section (below CMS)
-    if (selectedAddons.has('blog')) {
-      visualElements.push(`
-        <div class="tl-addon-section-vertical tl-addon-blog-section animate-in">
-          <img src="${ADDON_IMAGES.blog}" alt="Blog Section" class="tl-addon-image tl-blog-image" loading="lazy" />
-          <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:blog" title="${removeTitle}">×</button>
-        </div>
-      `);
-    }
-    
-    // 4. Analytics Setup (at the bottom)
-    if (selectedAddons.has('analytics')) {
-      visualElements.push(`
-        <div class="tl-addon-section-vertical tl-addon-analytics-section animate-in">
-          <img src="${ADDON_IMAGES.analytics}" alt="Analytical Setup" class="tl-addon-image tl-analytics-image" loading="lazy" />
-          <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:analytics" title="${removeTitle}">×</button>
-        </div>
-      `);
-    }
+    // Only Analytics is appended below the main page
+    const analyticsHtml = hasAnalytics ? `
+      <div class="tl-addon-section-vertical tl-addon-analytics-section animate-in">
+        <img src="${ADDON_IMAGES.analytics}" alt="Analytical Setup" class="tl-addon-image tl-analytics-image" loading="lazy" />
+        <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:analytics" title="${removeTitle}">×</button>
+      </div>
+    ` : '';
     
     return `
       <div class="tl-visual-stack-vertical">
-        ${visualElements.join('')}
+        ${mainPageHtml}
+        ${analyticsHtml}
       </div>
     `;
   }
