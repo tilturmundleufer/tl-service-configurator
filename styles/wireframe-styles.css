@@ -630,30 +630,61 @@
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
+/* White cover element to hide gray placeholders */
+.tl-addon-cover-white {
+  position: absolute;
+  top: -15px;
+  left: -10px;
+  right: -10px;
+  bottom: -15px;
+  background: white;
+  z-index: 0;
+}
+
 /* CMS - Overlays the 3 person placeholders area (middle section) */
 .tl-addon-cms-pos {
-  top: 42%;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 36%;
+  left: 5%;
+  right: 5%;
   width: 90%;
+}
+
+.tl-addon-cms-pos .tl-addon-cover-white {
+  top: -20px;
+  left: -15px;
+  right: -15px;
+  bottom: -10px;
 }
 
 .tl-addon-cms-pos .tl-cms-image {
   width: 100%;
   height: auto;
+  position: relative;
+  z-index: 1;
 }
 
 /* Blog - Overlays the blog section area (bottom section) */
 .tl-addon-blog-pos {
-  bottom: 2%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 95%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  padding: 0 3%;
+  box-sizing: border-box;
+}
+
+.tl-addon-blog-pos .tl-addon-cover-white {
+  top: -25px;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .tl-addon-blog-pos .tl-blog-image {
   width: 100%;
   height: auto;
+  position: relative;
+  z-index: 1;
 }
 
 /* Vertical Addon Sections (below page) */

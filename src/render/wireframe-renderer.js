@@ -350,12 +350,14 @@ export function createWireframeRenderer(rootElement, store, configData) {
         ` : ''}
         ${hasCms ? `
           <div class="tl-addon-positioned tl-addon-cms-pos animate-in">
+            <div class="tl-addon-cover-white"></div>
             <img src="${ADDON_IMAGES.cms}" alt="CMS Integration" class="tl-addon-image tl-cms-image" loading="lazy" />
             <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:cms" title="${removeTitle}">×</button>
           </div>
         ` : ''}
         ${hasBlog ? `
           <div class="tl-addon-positioned tl-addon-blog-pos animate-in">
+            <div class="tl-addon-cover-white"></div>
             <img src="${ADDON_IMAGES.blog}" alt="Blog Section" class="tl-addon-image tl-blog-image" loading="lazy" />
             <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:blog" title="${removeTitle}">×</button>
           </div>
