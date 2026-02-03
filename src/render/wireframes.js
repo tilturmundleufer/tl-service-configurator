@@ -1,6 +1,16 @@
 /**
- * Wireframe Components - SVG-based visual representations for each service
+ * Wireframe Components - Image-based visual representations for each service
  */
+
+// Hosted image URLs for addon visualizations
+const ADDON_IMAGES = {
+  blog: 'https://cdn.prod.website-files.com/67f7b904ecb4d95ff83be511/6981ec0b3beecf8f7550a724_Blog%20section.avif',
+  cms: 'https://cdn.prod.website-files.com/67f7b904ecb4d95ff83be511/6981ec0bd7bf0c826d38e4a4_CMS%20Integration.avif',
+  analytics: 'https://cdn.prod.website-files.com/67f7b904ecb4d95ff83be511/6981ec0bda00668ba15b2dc2_Analytical%20Setup.avif',
+  multilang: 'https://cdn.prod.website-files.com/67f7b904ecb4d95ff83be511/6981ec0b8982d50c157a3fa5_Multilingual%20.avif',
+  seo: 'https://cdn.prod.website-files.com/67f7b904ecb4d95ff83be511/6981ec0b892814492a9c2a8b_SEO%20Optimisation.avif',
+  initialPage: 'https://cdn.prod.website-files.com/67f7b904ecb4d95ff83be511/6981ec0ba953d32a7697882f_initial%20page%20selection.avif'
+};
 
 /**
  * Create the base wireframe SVG for a webpage
@@ -81,137 +91,52 @@ export function createPageWireframeSVG(pageNumber = 1, totalPages = 1, hasBlog =
 }
 
 /**
- * Create blog section addon for wireframe
- * @returns {string} SVG markup
+ * Create blog section addon using hosted image
+ * @returns {string} Image markup
  */
 export function createBlogAddonSVG() {
   return `
-    <div class="tl-addon-overlay tl-addon-blog">
-      <svg class="tl-blog-svg" viewBox="0 0 180 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Blog section header -->
-        <rect x="0" y="0" width="180" height="80" rx="4" fill="#F0FDF4" stroke="#22C55E" stroke-width="1" stroke-dasharray="4 2"/>
-        <text x="90" y="12" text-anchor="middle" fill="#22C55E" font-size="8" font-weight="600">BLOG</text>
-        
-        <!-- Blog post 1 -->
-        <rect x="8" y="20" width="50" height="35" rx="2" fill="#E2E8F0"/>
-        <rect x="8" y="58" width="40" height="5" rx="1" fill="#94A3B8"/>
-        <rect x="8" y="66" width="50" height="3" rx="1" fill="#CBD5E1"/>
-        
-        <!-- Blog post 2 -->
-        <rect x="65" y="20" width="50" height="35" rx="2" fill="#E2E8F0"/>
-        <rect x="65" y="58" width="40" height="5" rx="1" fill="#94A3B8"/>
-        <rect x="65" y="66" width="50" height="3" rx="1" fill="#CBD5E1"/>
-        
-        <!-- Blog post 3 -->
-        <rect x="122" y="20" width="50" height="35" rx="2" fill="#E2E8F0"/>
-        <rect x="122" y="58" width="40" height="5" rx="1" fill="#94A3B8"/>
-        <rect x="122" y="66" width="50" height="3" rx="1" fill="#CBD5E1"/>
-      </svg>
-    </div>
+    <img src="${ADDON_IMAGES.blog}" alt="Blog Section" class="tl-addon-image tl-blog-image" loading="lazy" />
   `;
 }
 
 /**
- * Create multilingual badge addon
- * @returns {string} SVG markup
+ * Create multilingual badge addon using hosted image
+ * @returns {string} Image markup
  */
 export function createMultilingualAddonSVG() {
   return `
-    <svg class="tl-multilingual-svg" viewBox="0 0 60 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="0" y="0" width="60" height="24" rx="4" fill="#3B82F6"/>
-      <text x="30" y="16" text-anchor="middle" fill="white" font-size="10" font-weight="600">DE | EN</text>
-    </svg>
+    <img src="${ADDON_IMAGES.multilang}" alt="Multilingual" class="tl-addon-image tl-multilingual-image" loading="lazy" />
   `;
 }
 
 /**
- * Create CMS integration addon (collection icon connected to wireframe)
- * @returns {string} SVG markup
+ * Create CMS integration addon using hosted image
+ * @returns {string} Image markup
  */
 export function createCMSAddonSVG() {
   return `
-    <svg class="tl-cms-svg" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Connection line -->
-      <path d="M0 30 L30 30" stroke="#8B5CF6" stroke-width="2" stroke-dasharray="4 2"/>
-      
-      <!-- CMS Collection Icon -->
-      <rect x="30" y="5" width="65" height="50" rx="6" fill="#F5F3FF" stroke="#8B5CF6" stroke-width="2"/>
-      
-      <!-- Collection items -->
-      <rect x="38" y="13" width="49" height="10" rx="2" fill="#DDD6FE"/>
-      <rect x="38" y="27" width="49" height="10" rx="2" fill="#DDD6FE"/>
-      <rect x="38" y="41" width="49" height="10" rx="2" fill="#DDD6FE"/>
-      
-      <!-- Database icon -->
-      <circle cx="44" cy="18" r="3" fill="#8B5CF6"/>
-      <circle cx="44" cy="32" r="3" fill="#8B5CF6"/>
-      <circle cx="44" cy="46" r="3" fill="#8B5CF6"/>
-      
-      <!-- Lines representing data -->
-      <rect x="50" y="16" width="30" height="4" rx="1" fill="#A78BFA"/>
-      <rect x="50" y="30" width="25" height="4" rx="1" fill="#A78BFA"/>
-      <rect x="50" y="44" width="32" height="4" rx="1" fill="#A78BFA"/>
-    </svg>
+    <img src="${ADDON_IMAGES.cms}" alt="CMS Integration" class="tl-addon-image tl-cms-image" loading="lazy" />
   `;
 }
 
 /**
- * Create SEO addon visualization
- * @returns {string} SVG markup
+ * Create SEO addon visualization using hosted image
+ * @returns {string} Image markup
  */
 export function createSEOAddonSVG() {
   return `
-    <svg class="tl-seo-svg" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Search icon background -->
-      <circle cx="25" cy="25" r="24" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2"/>
-      
-      <!-- Magnifying glass -->
-      <circle cx="22" cy="22" r="10" fill="none" stroke="#F59E0B" stroke-width="3"/>
-      <line x1="29" y1="29" x2="38" y2="38" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
-      
-      <!-- #1 badge -->
-      <circle cx="38" cy="12" r="10" fill="#22C55E"/>
-      <text x="38" y="16" text-anchor="middle" fill="white" font-size="10" font-weight="700">#1</text>
-    </svg>
+    <img src="${ADDON_IMAGES.seo}" alt="SEO Optimisation" class="tl-addon-image tl-seo-image" loading="lazy" />
   `;
 }
 
 /**
- * Create Analytics dashboard addon
- * @returns {string} SVG markup
+ * Create Analytics dashboard addon using hosted image
+ * @returns {string} Image markup
  */
 export function createAnalyticsAddonSVG() {
   return `
-    <svg class="tl-analytics-svg" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Dashboard background -->
-      <rect x="0" y="0" width="200" height="80" rx="6" fill="#F8FAFC" stroke="#64748B" stroke-width="1"/>
-      
-      <!-- Title -->
-      <rect x="8" y="8" width="60" height="8" rx="2" fill="#64748B"/>
-      
-      <!-- Chart 1 - Bar chart -->
-      <rect x="8" y="24" width="55" height="48" rx="4" fill="#E2E8F0"/>
-      <rect x="14" y="50" width="8" height="16" rx="1" fill="#3B82F6"/>
-      <rect x="26" y="40" width="8" height="26" rx="1" fill="#3B82F6"/>
-      <rect x="38" y="32" width="8" height="34" rx="1" fill="#3B82F6"/>
-      <rect x="50" y="44" width="8" height="22" rx="1" fill="#3B82F6"/>
-      
-      <!-- Chart 2 - Line chart -->
-      <rect x="72" y="24" width="55" height="48" rx="4" fill="#E2E8F0"/>
-      <polyline points="78,60 90,50 102,55 114,40 120,45" fill="none" stroke="#22C55E" stroke-width="2"/>
-      <circle cx="78" cy="60" r="3" fill="#22C55E"/>
-      <circle cx="90" cy="50" r="3" fill="#22C55E"/>
-      <circle cx="102" cy="55" r="3" fill="#22C55E"/>
-      <circle cx="114" cy="40" r="3" fill="#22C55E"/>
-      <circle cx="120" cy="45" r="3" fill="#22C55E"/>
-      
-      <!-- Stats boxes -->
-      <rect x="136" y="24" width="56" height="20" rx="4" fill="#DBEAFE"/>
-      <text x="164" y="38" text-anchor="middle" fill="#3B82F6" font-size="10" font-weight="600">1,234</text>
-      
-      <rect x="136" y="52" width="56" height="20" rx="4" fill="#DCFCE7"/>
-      <text x="164" y="66" text-anchor="middle" fill="#22C55E" font-size="10" font-weight="600">+24%</text>
-    </svg>
+    <img src="${ADDON_IMAGES.analytics}" alt="Analytical Setup" class="tl-addon-image tl-analytics-image" loading="lazy" />
   `;
 }
 
@@ -442,6 +367,28 @@ export function getAddonSVGGenerator(addonSlug) {
   return generators[addonSlug] || null;
 }
 
+/**
+ * Create initial page image (used as base visualization)
+ * @returns {string} Image markup
+ */
+export function createInitialPageImage() {
+  return `
+    <img src="${ADDON_IMAGES.initialPage}" alt="Page Preview" class="tl-addon-image tl-initial-page-image" loading="lazy" />
+  `;
+}
+
+/**
+ * Get addon image URL
+ * @param {string} addonSlug - Addon slug
+ * @returns {string|null} Image URL
+ */
+export function getAddonImageUrl(addonSlug) {
+  return ADDON_IMAGES[addonSlug] || null;
+}
+
+// Export the addon images constant for use elsewhere
+export { ADDON_IMAGES };
+
 export default {
   createPageWireframeSVG,
   createBlogAddonSVG,
@@ -453,5 +400,8 @@ export default {
   createJobCardSVG,
   createWebappSVG,
   createAutomationFlowSVG,
-  getAddonSVGGenerator
+  getAddonSVGGenerator,
+  createInitialPageImage,
+  getAddonImageUrl,
+  ADDON_IMAGES
 };

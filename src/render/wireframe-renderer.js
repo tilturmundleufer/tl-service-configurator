@@ -17,7 +17,9 @@ import {
   createJobCardSVG,
   createWebappSVG,
   createAutomationFlowSVG,
-  getAddonSVGGenerator
+  getAddonSVGGenerator,
+  createInitialPageImage,
+  ADDON_IMAGES
 } from './wireframes.js';
 import { injectAnimationStyles } from './animations.js';
 
@@ -42,14 +44,14 @@ export function createWireframeRenderer(rootElement, store, configData) {
   }
   
   /**
-   * Build initial DOM structure
+   * Build initial DOM structure - 3-column layout
    */
   function buildInitialStructure() {
     const state = store.getState();
     
     rootElement.innerHTML = `
       <div class="tl-configurator tl-wireframe-mode tl-tab-mode">
-        <!-- Language Toggle -->
+        <!-- Language Toggle (top right) -->
         <div class="tl-lang-toggle" data-lang-toggle>
           <button class="tl-lang-btn ${state.lang === 'de' ? 'is-active' : ''}" 
                   data-action="set-lang" data-lang="de">DE</button>
@@ -57,29 +59,37 @@ export function createWireframeRenderer(rootElement, store, configData) {
                   data-action="set-lang" data-lang="en">EN</button>
         </div>
         
-        <!-- Main Layout: Configurator + Summary side by side -->
-        <div class="tl-main-layout">
-          <!-- Left: Configurator -->
-          <div class="tl-configurator-main">
-            <!-- Tab Navigation -->
-            <nav class="tl-tab-nav" data-tab-nav>
-              ${renderServiceTabs(state)}
-            </nav>
-            
-            <!-- Tab Content Container -->
-            <section class="tl-tab-content" data-tab-content>
-              ${renderTabContent(state)}
-            </section>
+        <!-- Main Layout: 3 columns - Tabs | Visualization | Options+Summary -->
+        <div class="tl-main-layout-3col">
+          <!-- Left: Vertical Tab Navigation -->
+          <nav class="tl-tab-nav-vertical" data-tab-nav>
+            ${renderServiceTabs(state)}
+          </nav>
+          
+          <!-- Center: Visualization Area -->
+          <div class="tl-configurator-visual" data-tab-content>
+            ${renderTabContent(state)}
           </div>
           
-          <!-- Right: Summary Panel -->
-          <aside class="tl-summary-sidebar" data-summary>
-            <h3 class="tl-summary-title" data-i18n="summary.title">${t('summary.title', state.lang)}</h3>
-            <div class="tl-summary-content" data-summary-content>
-              ${renderSummaryContent(state)}
+          <!-- Right: Options + Summary Sidebar -->
+          <aside class="tl-configurator-sidebar" data-sidebar>
+            <!-- Options Panel (Size + Addons) -->
+            <div class="tl-options-sidebar" data-options-sidebar>
+              ${renderOptionsSidebar(state)}
             </div>
             
-            <!-- Submit Button in Sidebar -->
+            <!-- Summary Panel -->
+            <div class="tl-summary-panel-compact" data-summary>
+              <h3 class="tl-summary-title-compact" data-i18n="summary.title">
+                <span class="tl-summary-collapse-icon">▼</span>
+                ${t('summary.title', state.lang)}
+              </h3>
+              <div class="tl-summary-content" data-summary-content>
+                ${renderSummaryContent(state)}
+              </div>
+            </div>
+            
+            <!-- Submit Button -->
             <div class="tl-submit-section" data-submit-section>
               <div class="tl-validation-errors" data-validation-errors></div>
               <button class="tl-submit-btn" data-submit-btn data-action="submit">
@@ -97,7 +107,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
   }
   
   /**
-   * Render service tabs navigation
+   * Render service tabs navigation (vertical layout)
    * @param {Object} state - Current state
    * @returns {string} HTML string
    */
@@ -110,19 +120,84 @@ export function createWireframeRenderer(rootElement, store, configData) {
       const name = getLocalizedName(service, state.lang);
       
       return `
-        <button class="tl-tab ${isActive ? 'is-active' : ''} ${isSelected ? 'is-selected' : ''}" 
+        <button class="tl-tab-vertical ${isActive ? 'is-active' : ''} ${isSelected ? 'is-selected' : ''}" 
                 data-action="select-tab" 
                 data-service="${service.slug}">
           <span class="tl-tab-icon">${service.icon}</span>
           <span class="tl-tab-name">${name}</span>
-          ${isSelected ? '<span class="tl-tab-check">✓</span>' : ''}
         </button>
       `;
     }).join('');
   }
   
   /**
-   * Render the content for the active tab
+   * Render options sidebar (Size + Addons for active service)
+   * @param {Object} state - Current state
+   * @returns {string} HTML string
+   */
+  function renderOptionsSidebar(state) {
+    const activeServiceSlug = state.expandedService || configData.services[0]?.slug;
+    const service = configData.services.find(s => s.slug === activeServiceSlug);
+    
+    if (!service) return '';
+    
+    const isSelected = selectors.isServiceSelected(state, service.slug);
+    const selection = state.selections[service.slug];
+    const sizes = configData.sizes[service.slug] || [];
+    const addons = configData.addons[service.slug] || [];
+    
+    // Check if there are available (non-selected) addons
+    const availableAddons = selection ? addons.filter(addon => !selection.addons.has(addon.slug)) : addons;
+    
+    return `
+      <!-- Size Selection -->
+      <div class="tl-options-section">
+        <h4 class="tl-options-title" data-i18n="size.title">${t('size.title', state.lang)}</h4>
+        <div class="tl-size-options" data-size-options="${service.slug}">
+          ${sizes.map(size => {
+            const isSelectedSize = selection && selection.size === size.slug;
+            const sizeName = getLocalizedName(size, state.lang);
+            const isDisabled = !isSelected;
+            return `
+              <button class="tl-size-option ${isSelectedSize ? 'is-selected' : ''} ${isDisabled ? 'is-disabled' : ''}"
+                      data-action="set-size"
+                      data-size="${size.slug}"
+                      data-for-service="${service.slug}"
+                      ${isDisabled ? 'disabled' : ''}>
+                <span>${sizeName}</span>
+                <span class="tl-size-check">✓</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
+      </div>
+      
+      <!-- Addons Section -->
+      <div class="tl-options-section">
+        <h4 class="tl-options-title" data-i18n="addons.title">${t('addons.title', state.lang)}</h4>
+        <div class="tl-addon-options" data-addon-options="${service.slug}">
+          ${availableAddons.length > 0 ? availableAddons.map(addon => {
+            const isDisabled = !isSelected || !selection?.size || (addon.requiresAddon && !selection.addons.has(addon.requiresAddon));
+            const addonName = getLocalizedName(addon, state.lang);
+            
+            return `
+              <button class="tl-addon-option ${isDisabled ? 'is-disabled' : ''}"
+                      data-action="toggle-addon"
+                      data-addon="${addon.slug}"
+                      data-for-service="${service.slug}"
+                      ${isDisabled ? 'disabled' : ''}>
+                <span class="tl-addon-option-icon">${addon.icon}</span>
+                <span>${addonName}</span>
+              </button>
+            `;
+          }).join('') : `<p class="tl-no-addons">${state.lang === 'de' ? 'Alle Add-ons ausgewählt' : 'All add-ons selected'}</p>`}
+        </div>
+      </div>
+    `;
+  }
+  
+  /**
+   * Render the content for the active tab (visualization only)
    * @param {Object} state - Current state
    * @returns {string} HTML string
    */
@@ -159,8 +234,8 @@ export function createWireframeRenderer(rootElement, store, configData) {
           `}
         </div>
         
-        <!-- Service Configuration (only if selected) -->
-        ${isSelected ? renderServiceConfiguration(service, selection, state) : `
+        <!-- Visual Area (only visualization, options in sidebar) -->
+        ${isSelected ? renderServiceVisualization(service, selection, state) : `
           <button type="button" class="tl-service-placeholder" data-action="toggle-service" data-service="${service.slug}">
             <span>${state.lang === 'de' 
               ? 'Klicke auf "Hinzufügen" um diesen Service zu konfigurieren' 
@@ -172,72 +247,16 @@ export function createWireframeRenderer(rootElement, store, configData) {
   }
   
   /**
-   * Render service configuration (size, addons, visual)
+   * Render service visualization only (options are in sidebar)
    * @param {Object} service - Service data
    * @param {Object} selection - Current selection
    * @param {Object} state - Current state
    * @returns {string} HTML string
    */
-  function renderServiceConfiguration(service, selection, state) {
-    const sizes = configData.sizes[service.slug] || [];
-    const addons = configData.addons[service.slug] || [];
-    
-    // Check if there are available (non-selected) addons
-    const availableAddons = addons.filter(addon => !selection.addons.has(addon.slug));
-    
+  function renderServiceVisualization(service, selection, state) {
     return `
-      <div class="tl-service-config">
-        <!-- Visual Stack Area -->
-        <div class="tl-visual-stack-area" data-visual-area="${service.slug}">
-          ${renderVisualStack(service, selection, state, false)}
-        </div>
-        
-        <!-- Options Panel -->
-        <div class="tl-options-panel">
-          <!-- Size Selection -->
-          <div class="tl-options-section">
-            <h4 class="tl-options-title" data-i18n="size.title">${t('size.title', state.lang)}</h4>
-            <div class="tl-size-options" data-size-options="${service.slug}">
-              ${sizes.map(size => {
-                const isSelected = selection && selection.size === size.slug;
-                const sizeName = getLocalizedName(size, state.lang);
-                return `
-                  <button class="tl-size-option ${isSelected ? 'is-selected' : ''}"
-                          data-action="set-size"
-                          data-size="${size.slug}"
-                          data-for-service="${service.slug}">
-                    <span>${sizeName}</span>
-                    <span class="tl-size-check">✓</span>
-                  </button>
-                `;
-              }).join('')}
-            </div>
-          </div>
-          
-          <!-- Addons Section (only show if size selected AND addons available) -->
-          ${selection && selection.size && availableAddons.length > 0 ? `
-            <div class="tl-options-section">
-              <h4 class="tl-options-title" data-i18n="addons.title">${t('addons.title', state.lang)}</h4>
-              <div class="tl-addon-options" data-addon-options="${service.slug}">
-                ${availableAddons.map(addon => {
-                  const isDisabled = addon.requiresAddon && !selection.addons.has(addon.requiresAddon);
-                  const addonName = getLocalizedName(addon, state.lang);
-                  
-                  return `
-                    <button class="tl-addon-option ${isDisabled ? 'is-disabled' : ''}"
-                            data-action="toggle-addon"
-                            data-addon="${addon.slug}"
-                            data-for-service="${service.slug}"
-                            ${isDisabled ? 'disabled' : ''}>
-                      <span class="tl-addon-option-icon">${addon.icon}</span>
-                      <span>${addonName}</span>
-                    </button>
-                  `;
-                }).join('')}
-              </div>
-            </div>
-          ` : ''}
-        </div>
+      <div class="tl-visual-stack-area" data-visual-area="${service.slug}">
+        ${renderVisualStack(service, selection, state, false)}
       </div>
     `;
   }
@@ -290,7 +309,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
   }
   
   /**
-   * Render stacked page wireframes (for Webdesign)
+   * Render stacked page wireframes (for Webdesign) - Vertical layout
    * @param {number} count - Number of pages
    * @param {Object} selection - Current selection
    * @param {Array} addons - Addon configurations
@@ -300,37 +319,70 @@ export function createWireframeRenderer(rootElement, store, configData) {
    * @returns {string} HTML string
    */
   function renderPageStack(count, selection, addons, state, animate = false, serviceSlug = 'webdesign') {
-    const pageCount = Math.min(count, 10);
-    const pages = [];
-    const hasBlog = selection && selection.addons && selection.addons.has('blog');
+    const selectedAddons = selection && selection.addons ? selection.addons : new Set();
+    const removeTitle = state.lang === 'de' ? 'Entfernen' : 'Remove';
     
-    for (let i = 1; i <= pageCount; i++) {
-      const animClass = animate ? 'animate-in' : '';
-      const animStyle = animate ? `animation-delay: ${(i-1) * 80}ms;` : '';
-      pages.push(`
-        <div class="tl-stacked-item ${animClass}" style="${animStyle}">
-          ${createPageWireframeSVG(i, pageCount, hasBlog)}
+    // Build vertical stack of visual elements
+    const visualElements = [];
+    
+    // 1. Main Page with positioned overlays (Multilingual top-left, SEO top-right)
+    const hasMultilang = selectedAddons.has('multilang');
+    const hasSeo = selectedAddons.has('seo');
+    
+    visualElements.push(`
+      <div class="tl-visual-page-wrapper">
+        <!-- Positioned overlays on the page -->
+        ${hasMultilang ? `
+          <div class="tl-addon-positioned tl-addon-multilang-pos animate-in">
+            <img src="${ADDON_IMAGES.multilang}" alt="Multilingual" class="tl-addon-image tl-multilingual-image" loading="lazy" />
+            <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:multilang" title="${removeTitle}">×</button>
+          </div>
+        ` : ''}
+        ${hasSeo ? `
+          <div class="tl-addon-positioned tl-addon-seo-pos animate-in">
+            <img src="${ADDON_IMAGES.seo}" alt="SEO Optimisation" class="tl-addon-image tl-seo-image" loading="lazy" />
+            <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:seo" title="${removeTitle}">×</button>
+          </div>
+        ` : ''}
+        <!-- Main Page Image -->
+        <img src="${ADDON_IMAGES.initialPage}" alt="Page Preview" class="tl-main-page-image ${animate ? 'animate-in' : ''}" loading="lazy" />
+      </div>
+    `);
+    
+    // 2. CMS Integration (below page, with connection visualization)
+    if (selectedAddons.has('cms')) {
+      visualElements.push(`
+        <div class="tl-addon-section-vertical tl-addon-cms-section animate-in">
+          <img src="${ADDON_IMAGES.cms}" alt="CMS Integration" class="tl-addon-image tl-cms-image" loading="lazy" />
+          <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:cms" title="${removeTitle}">×</button>
         </div>
       `);
     }
     
-    // Get positioned addons (overlays and bottom)
-    const { overlayAddons, bottomAddons } = renderAddonOverlays(selection, addons, state, serviceSlug);
+    // 3. Blog Section (below CMS)
+    if (selectedAddons.has('blog')) {
+      visualElements.push(`
+        <div class="tl-addon-section-vertical tl-addon-blog-section animate-in">
+          <img src="${ADDON_IMAGES.blog}" alt="Blog Section" class="tl-addon-image tl-blog-image" loading="lazy" />
+          <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:blog" title="${removeTitle}">×</button>
+        </div>
+      `);
+    }
+    
+    // 4. Analytics Setup (at the bottom)
+    if (selectedAddons.has('analytics')) {
+      visualElements.push(`
+        <div class="tl-addon-section-vertical tl-addon-analytics-section animate-in">
+          <img src="${ADDON_IMAGES.analytics}" alt="Analytical Setup" class="tl-addon-image tl-analytics-image" loading="lazy" />
+          <button class="tl-addon-remove" data-action="remove" data-target="addon:${serviceSlug}:analytics" title="${removeTitle}">×</button>
+        </div>
+      `);
+    }
     
     return `
-      <div class="tl-visual-main">
-        <div class="tl-stack-container">
-          ${pages.join('')}
-        </div>
-        <div class="tl-addon-overlays">
-          ${overlayAddons.join('')}
-        </div>
+      <div class="tl-visual-stack-vertical">
+        ${visualElements.join('')}
       </div>
-      ${bottomAddons.length > 0 ? `
-        <div class="tl-addon-bottom">
-          ${bottomAddons.join('')}
-        </div>
-      ` : ''}
     `;
   }
   
@@ -546,6 +598,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
     elements = {
       tabNav: rootElement.querySelector('[data-tab-nav]'),
       tabContent: rootElement.querySelector('[data-tab-content]'),
+      optionsSidebar: rootElement.querySelector('[data-options-sidebar]'),
       summary: rootElement.querySelector('[data-summary]'),
       summaryContent: rootElement.querySelector('[data-summary-content]'),
       submitBtn: rootElement.querySelector('[data-submit-btn]'),
@@ -571,7 +624,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
     // Language changed - re-render everything
     if (newState.lang !== prevState.lang) {
       updateAllTranslations(rootElement, newState.lang);
-      elements.servicesContainer.innerHTML = renderServiceItems(newState);
+      updateServiceItems(newState, prevState);
       elements.summaryContent.innerHTML = renderSummaryContent(newState);
       updateLangToggle(newState.lang);
       return;
@@ -611,8 +664,13 @@ export function createWireframeRenderer(rootElement, store, configData) {
     // Update tab navigation
     elements.tabNav.innerHTML = renderServiceTabs(newState);
     
-    // Update tab content
+    // Update tab content (visualization)
     elements.tabContent.innerHTML = renderTabContent(newState);
+    
+    // Update options sidebar
+    if (elements.optionsSidebar) {
+      elements.optionsSidebar.innerHTML = renderOptionsSidebar(newState);
+    }
   }
   
   /**

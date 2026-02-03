@@ -102,7 +102,7 @@
 }
 
 /* ============================================
-   Main Layout - Side by Side
+   Main Layout - Legacy 2-Column (kept for compatibility)
    ============================================ */
 .tl-main-layout {
   display: grid;
@@ -182,6 +182,33 @@
     order: 2;
     align-self: auto;
   }
+}
+
+/* ============================================
+   New 3-Column Sidebar Styles
+   ============================================ */
+.tl-configurator-sidebar .tl-submit-section {
+  margin-top: auto;
+  padding-top: var(--tl-spacing-md);
+  border-top: 1px solid var(--tl-color-gray-200);
+}
+
+.tl-configurator-sidebar .tl-submit-btn {
+  width: 100%;
+  min-width: unset;
+  padding: var(--tl-spacing-md) var(--tl-spacing-lg);
+  font-size: var(--tl-font-size-base);
+  font-weight: 600;
+  border-radius: var(--tl-radius-lg);
+  background: var(--tl-color-primary);
+  color: var(--tl-color-white);
+  border: none;
+  cursor: pointer;
+  transition: background var(--tl-transition-fast);
+}
+
+.tl-configurator-sidebar .tl-submit-btn:hover:not(:disabled) {
+  background: var(--tl-color-primary-dark);
 }
 
 .tl-configurator *,
