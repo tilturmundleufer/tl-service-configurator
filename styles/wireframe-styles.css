@@ -643,10 +643,10 @@
 
 /* CMS - Overlays the 3 person placeholders area (middle section) */
 .tl-addon-cms-pos {
-  top: 30%;
+  top: 22%;
   left: 50%;
   transform: translateX(-50%);
-  width: 65%;
+  width: 50%;
 }
 
 /* White cover only over the colored persons area (bottom part), not the lines/icon */
