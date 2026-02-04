@@ -51,12 +51,14 @@ export function createWireframeRenderer(rootElement, store, configData) {
     
     rootElement.innerHTML = `
       <div class="tl-configurator tl-wireframe-mode tl-step-mode">
-        <!-- Language Toggle (top right) -->
-        <div class="tl-lang-toggle" data-lang-toggle>
-          <button class="tl-lang-btn ${state.lang === 'de' ? 'is-active' : ''}" 
-                  data-action="set-lang" data-lang="de">DE</button>
-          <button class="tl-lang-btn ${state.lang === 'en' ? 'is-active' : ''}" 
-                  data-action="set-lang" data-lang="en">EN</button>
+        <!-- Language Toggle (top, own section) -->
+        <div class="tl-lang-section" data-lang-section>
+          <div class="tl-lang-toggle" data-lang-toggle>
+            <button class="tl-lang-btn ${state.lang === 'de' ? 'is-active' : ''}" 
+                    data-action="set-lang" data-lang="de">DE</button>
+            <button class="tl-lang-btn ${state.lang === 'en' ? 'is-active' : ''}" 
+                    data-action="set-lang" data-lang="en">EN</button>
+          </div>
         </div>
         
         <!-- Main Layout: 2 columns - Content | Sidebar -->
@@ -81,7 +83,6 @@ export function createWireframeRenderer(rootElement, store, configData) {
             <!-- Summary Panel -->
             <div class="tl-summary-panel-compact" data-summary>
               <h3 class="tl-summary-title-compact" data-i18n="summary.title">
-                <span class="tl-summary-collapse-icon">▼</span>
                 ${t('summary.title', state.lang)}
               </h3>
               <div class="tl-summary-content" data-summary-content>
@@ -89,7 +90,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
               </div>
             </div>
             
-            <!-- Action Buttons -->
+            <!-- Action Buttons (at bottom) -->
             <div class="tl-submit-section" data-submit-section>
               <div class="tl-validation-errors" data-validation-errors></div>
               ${renderActionButtons(state)}
@@ -114,26 +115,30 @@ export function createWireframeRenderer(rootElement, store, configData) {
     const hasSize = webdesignSelection && webdesignSelection.size;
     
     if (state.currentStep === 'add' || state.currentStep === 'configure') {
-      // Show "Continue" button, disabled until size is selected
+      // Show "Contact Us" above "Continue" button
       return `
-        <button class="tl-continue-btn ${!hasSize ? 'is-disabled' : ''}" 
-                data-action="next-step" 
-                ${!hasSize ? 'disabled' : ''}>
-          <span>${state.lang === 'de' ? 'Weiter' : 'Continue'}</span>
-        </button>
-        <button class="tl-contact-btn" data-action="contact">
-          <span>${state.lang === 'de' ? 'Kontakt' : 'Contact Us'}</span>
-        </button>
+        <div class="tl-action-buttons">
+          <button class="tl-contact-btn" data-action="contact">
+            <span>${state.lang === 'de' ? 'Kontakt' : 'Contact Us'}</span>
+          </button>
+          <button class="tl-continue-btn ${!hasSize ? 'is-disabled' : ''}" 
+                  data-action="next-step" 
+                  ${!hasSize ? 'disabled' : ''}>
+            <span>${state.lang === 'de' ? 'Weiter' : 'Continue'}</span>
+          </button>
+        </div>
       `;
     } else {
-      // Show "Submit" button in extras/complete step
+      // Show "Contact Us" above "Submit" button in extras/complete step
       return `
-        <button class="tl-submit-btn" data-submit-btn data-action="submit">
-          <span data-i18n="submit">${t('submit', state.lang)}</span>
-        </button>
-        <button class="tl-contact-btn" data-action="contact">
-          <span>${state.lang === 'de' ? 'Kontakt' : 'Contact Us'}</span>
-        </button>
+        <div class="tl-action-buttons">
+          <button class="tl-contact-btn" data-action="contact">
+            <span>${state.lang === 'de' ? 'Kontakt' : 'Contact Us'}</span>
+          </button>
+          <button class="tl-submit-btn" data-submit-btn data-action="submit">
+            <span data-i18n="submit">${t('submit', state.lang)}</span>
+          </button>
+        </div>
       `;
     }
   }
