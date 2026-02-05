@@ -73,6 +73,14 @@
   align-self: stretch;
 }
 
+/* Fixed height for step 3 and step 4 (matching heights) */
+[data-visual-step="3"] .tl-configurator-content,
+[data-visual-step="4"] .tl-configurator-content {
+  height: 500px;
+  max-height: 60vh;
+  min-height: 400px;
+}
+
 .tl-main-panel {
   display: flex;
   flex-direction: column;
@@ -275,12 +283,53 @@
 }
 
 /* ============================================
-   Extras Scroll Container (for mobile)
+   Scroll Containers (for step 3 and step 4)
    ============================================ */
-.tl-extras-scroll-container {
+.tl-extras-scroll-container,
+.tl-step3-scroll-container {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+}
+
+/* Step 3 main panel - fixed height to match step 4 */
+.tl-main-panel-step3 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tl-step3-scroll-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tl-spacing-lg);
+  padding-right: var(--tl-spacing-sm);
+}
+
+/* ============================================
+   Inline Addons (inside main content in step 3)
+   ============================================ */
+.tl-inline-addons {
+  margin-top: var(--tl-spacing-lg);
+  padding-top: var(--tl-spacing-lg);
+  border-top: 1px solid var(--tl-color-gray-200);
+}
+
+.tl-inline-addons-title {
+  font-size: var(--tl-font-size-base);
+  font-weight: 700;
+  color: var(--tl-color-text);
+  margin: 0 0 var(--tl-spacing-md);
+}
+
+.tl-inline-addons-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tl-spacing-sm);
+}
+
+.tl-inline-addons-list .tl-addon-option {
+  flex: 0 0 auto;
 }
 
 /* ============================================
@@ -1897,15 +1946,30 @@
     margin-bottom: var(--tl-spacing-sm);
   }
   
-  /* Step 3: Hide size cards, make visualization scrollable */
+  /* Step 3: Hide size cards, make content scrollable */
   [data-visual-step="3"] .tl-size-cards {
     display: none;
   }
   
-  [data-visual-step="3"] .tl-visual-stack-area {
-    max-height: 50vh;
+  /* Step 3 scroll container on mobile */
+  [data-visual-step="3"] .tl-step3-scroll-container {
+    max-height: none;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Inline addons on mobile */
+  .tl-inline-addons {
+    margin-top: var(--tl-spacing-md);
+    padding-top: var(--tl-spacing-md);
+  }
+  
+  .tl-inline-addons-list {
+    flex-direction: column;
+  }
+  
+  .tl-inline-addons-list .tl-addon-option {
+    width: 100%;
   }
   
   /* Extras section - full width cards */

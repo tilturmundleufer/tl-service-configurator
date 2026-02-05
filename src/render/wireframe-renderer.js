@@ -226,8 +226,44 @@ export function createWireframeRenderer(rootElement, store, configData) {
       `;
     }
     
-    // Step 2: Configure - Show size cards and visualization
+    // Step 2: Configure - Show size cards (no size selected yet)
+    // Step 3: Visualization with addons inside (size selected)
     if (state.currentStep === 'add' || state.currentStep === 'configure') {
+      const hasSize = webdesignSelection?.size;
+      
+      // Step 3: Size selected - show visualization + addons in scrollable area
+      if (hasSize) {
+        return `
+          <div class="tl-main-panel tl-main-panel-step3">
+            <div class="tl-service-header">
+              <div class="tl-service-header-info">
+                <span class="tl-service-icon-large">${webdesignService?.icon || '🌐'}</span>
+                <div>
+                  <h2 class="tl-service-title">${name}</h2>
+                  <p class="tl-service-description">${desc}</p>
+                </div>
+              </div>
+              <button class="tl-add-service-btn" data-action="toggle-service" data-service="webdesign">
+                <span>+</span> ${state.lang === 'de' ? 'Hinzufügen' : 'Add'}
+              </button>
+            </div>
+            
+            <!-- Size Selection (hidden on mobile in step 3) -->
+            ${renderSizeCards(state)}
+            
+            <!-- Scrollable content area with visualization + addons -->
+            <div class="tl-step3-scroll-container">
+              <!-- Visualization -->
+              ${renderServiceVisualization(webdesignService, webdesignSelection, state)}
+              
+              <!-- Addons inside main content -->
+              ${renderInlineAddons(state)}
+            </div>
+          </div>
+        `;
+      }
+      
+      // Step 2: No size yet - show size cards only
       return `
         <div class="tl-main-panel">
           <div class="tl-service-header">
@@ -245,9 +281,6 @@ export function createWireframeRenderer(rootElement, store, configData) {
           
           <!-- Size Selection as Cards -->
           ${renderSizeCards(state)}
-          
-          <!-- Visualization (if size selected) -->
-          ${webdesignSelection?.size ? renderServiceVisualization(webdesignService, webdesignSelection, state) : ''}
         </div>
       `;
     }
@@ -352,7 +385,50 @@ export function createWireframeRenderer(rootElement, store, configData) {
   
   
   /**
-   * Render options sidebar (Addons for webdesign - Size is now in main content as cards)
+   * Render addons inline within the main content (for step 3)
+   * @param {Object} state - Current state
+   * @returns {string} HTML string
+   */
+  function renderInlineAddons(state) {
+    const selection = state.selections['webdesign'];
+    const addons = configData.addons['webdesign'] || [];
+    
+    if (!selection?.size) {
+      return '';
+    }
+    
+    // Get available (non-selected) addons
+    const availableAddons = addons.filter(addon => !selection.addons.has(addon.slug));
+    
+    if (availableAddons.length === 0) {
+      return '';
+    }
+    
+    return `
+      <div class="tl-inline-addons">
+        <h4 class="tl-inline-addons-title">${state.lang === 'de' ? 'Zusätzliche Optionen' : 'Additional Options'}</h4>
+        <div class="tl-inline-addons-list">
+          ${availableAddons.map(addon => {
+            const isDisabled = addon.requiresAddon && !selection.addons.has(addon.requiresAddon);
+            const addonName = getLocalizedName(addon, state.lang);
+            
+            return `
+              <button class="tl-addon-option ${isDisabled ? 'is-disabled' : ''}"
+                      data-action="toggle-addon"
+                      data-addon="${addon.slug}"
+                      data-for-service="webdesign"
+                      ${isDisabled ? 'disabled' : ''}>
+                <span>${addonName}</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+  
+  /**
+   * Render options sidebar (Addons for webdesign - only in step 3, not step 4)
    * @param {Object} state - Current state
    * @returns {string} HTML string
    */
@@ -360,6 +436,11 @@ export function createWireframeRenderer(rootElement, store, configData) {
     const isWebdesignSelected = selectors.isServiceSelected(state, 'webdesign');
     const selection = state.selections['webdesign'];
     const addons = configData.addons['webdesign'] || [];
+    
+    // Don't show addons in step 4 (extras/complete)
+    if (state.currentStep === 'extras' || state.currentStep === 'complete') {
+      return '';
+    }
     
     // Don't show addons until webdesign is selected and has a size
     if (!isWebdesignSelected || !selection?.size) {
