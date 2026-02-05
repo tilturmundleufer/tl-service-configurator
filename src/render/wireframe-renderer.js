@@ -44,13 +44,27 @@ export function createWireframeRenderer(rootElement, store, configData) {
   }
   
   /**
+   * Get the visual step number for mobile (1-4)
+   */
+  function getVisualStep(state) {
+    const isWebdesignSelected = selectors.isServiceSelected(state, 'webdesign');
+    const hasSize = state.selections['webdesign']?.size;
+    
+    if (!isWebdesignSelected) return 1; // Add button
+    if (!hasSize) return 2; // Size selection
+    if (state.currentStep === 'add' || state.currentStep === 'configure') return 3; // Visualization
+    return 4; // Extras
+  }
+  
+  /**
    * Build initial DOM structure - 2-column layout (no left tabs)
    */
   function buildInitialStructure() {
     const state = store.getState();
+    const visualStep = getVisualStep(state);
     
     rootElement.innerHTML = `
-      <div class="tl-configurator tl-wireframe-mode tl-step-mode">
+      <div class="tl-configurator tl-wireframe-mode tl-step-mode" data-visual-step="${visualStep}">
         <!-- Language Toggle (top, own section) -->
         <div class="tl-lang-section" data-lang-section>
           <div class="tl-lang-toggle" data-lang-toggle>
@@ -823,6 +837,12 @@ export function createWireframeRenderer(rootElement, store, configData) {
    * @param {Object} state - Current state
    */
   function updateAllContent(state) {
+    // Update visual step data attribute
+    const configurator = rootElement.querySelector('.tl-configurator');
+    if (configurator) {
+      configurator.setAttribute('data-visual-step', getVisualStep(state));
+    }
+    
     // Update main content area
     if (elements.mainContent) {
       elements.mainContent.innerHTML = renderMainContent(state);

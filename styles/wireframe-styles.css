@@ -1863,9 +1863,15 @@
     gap: var(--tl-spacing-sm);
   }
   
-  /* Summary panel - collapsible on mobile */
+  /* Summary panel - collapsible on mobile, hidden in Step 1 & 2 */
   .tl-summary-panel-compact {
     padding: var(--tl-spacing-sm) var(--tl-spacing-md);
+  }
+  
+  /* Hide summary panel in Step 1 and Step 2 on mobile */
+  [data-visual-step="1"] .tl-summary-panel-compact,
+  [data-visual-step="2"] .tl-summary-panel-compact {
+    display: none;
   }
   
   .tl-summary-header {
@@ -1889,6 +1895,17 @@
   
   .tl-summary-panel-compact:not(.is-collapsed) .tl-summary-header {
     margin-bottom: var(--tl-spacing-sm);
+  }
+  
+  /* Step 3: Hide size cards, make visualization scrollable */
+  [data-visual-step="3"] .tl-size-cards {
+    display: none;
+  }
+  
+  [data-visual-step="3"] .tl-visual-stack-area {
+    max-height: 50vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   /* Extras section - full width cards */
