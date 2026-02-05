@@ -116,6 +116,10 @@ export function createEventHandlers(rootElement, store, configData, onSubmit) {
       case 'contact':
         handleContact();
         break;
+        
+      case 'toggle-summary':
+        handleToggleSummary(actionElement);
+        break;
     }
   }
   
@@ -342,6 +346,17 @@ export function createEventHandlers(rootElement, store, configData, onSubmit) {
   function handleContact() {
     // Open contact page or modal - can be customized
     window.open('https://turmundleufer.de/kontakt', '_blank');
+  }
+  
+  /**
+   * Handle summary panel toggle (mobile accordion)
+   * @param {Element} element - Toggle button element
+   */
+  function handleToggleSummary(element) {
+    const summaryPanel = element.closest('[data-summary]');
+    if (summaryPanel) {
+      summaryPanel.classList.toggle('is-collapsed');
+    }
   }
   
   /**

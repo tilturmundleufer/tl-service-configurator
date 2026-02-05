@@ -104,7 +104,7 @@
 }
 
 /* ============================================
-   Large Add Button
+   Large Add Button (Legacy filled style)
    ============================================ */
 .tl-add-btn-large {
   display: flex;
@@ -132,6 +132,44 @@
 
 .tl-add-btn-large:active {
   transform: translateY(0);
+}
+
+/* ============================================
+   Outlined Add Button Box (New style - Desktop & Mobile)
+   ============================================ */
+.tl-add-btn-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 200px;
+  padding: var(--tl-spacing-2xl);
+  background: var(--tl-color-white);
+  border: 2px dashed var(--tl-color-gray-300);
+  border-radius: var(--tl-radius-xl);
+  cursor: pointer;
+  transition: all var(--tl-transition-fast);
+}
+
+.tl-add-btn-box:hover {
+  border-color: var(--tl-color-primary);
+  background: var(--tl-color-primary-alpha);
+}
+
+.tl-add-btn-box:active {
+  transform: scale(0.98);
+}
+
+.tl-add-btn-text {
+  font-size: var(--tl-font-size-xl);
+  font-weight: 600;
+  color: var(--tl-color-gray-500);
+  transition: color var(--tl-transition-fast);
+}
+
+.tl-add-btn-box:hover .tl-add-btn-text {
+  color: var(--tl-color-primary);
 }
 
 /* ============================================
@@ -201,6 +239,48 @@
   background: var(--tl-color-primary);
   color: var(--tl-color-white);
   white-space: nowrap;
+}
+
+/* ============================================
+   Compact Service Card (Step 4 - no visualization)
+   ============================================ */
+.tl-service-card-compact {
+  display: flex;
+  align-items: center;
+  gap: var(--tl-spacing-md);
+  padding: var(--tl-spacing-md);
+  background: var(--tl-color-gray-50);
+  border: 1px solid var(--tl-color-gray-200);
+  border-radius: var(--tl-radius-lg);
+}
+
+.tl-service-card-compact .tl-service-header-info {
+  display: flex;
+  align-items: center;
+  gap: var(--tl-spacing-md);
+}
+
+.tl-service-card-compact .tl-service-icon-large {
+  font-size: 1.25rem;
+}
+
+.tl-service-card-compact .tl-service-title {
+  font-size: var(--tl-font-size-base);
+  font-weight: 600;
+}
+
+.tl-service-card-compact .tl-service-description {
+  font-size: var(--tl-font-size-xs);
+  margin: 0;
+}
+
+/* ============================================
+   Extras Scroll Container (for mobile)
+   ============================================ */
+.tl-extras-scroll-container {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* ============================================
@@ -552,11 +632,32 @@
   flex: 1; /* Takes available space */
 }
 
+/* Summary Header (clickable for mobile accordion) */
+.tl-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  margin: 0 0 var(--tl-spacing-sm);
+  background: transparent;
+  border: none;
+  cursor: default;
+}
+
 .tl-summary-title-compact {
   font-size: var(--tl-font-size-base);
   font-weight: 700;
   color: var(--tl-color-text);
-  margin: 0 0 var(--tl-spacing-sm);
+  margin: 0;
+}
+
+/* Toggle icon - hidden on desktop */
+.tl-summary-toggle-icon {
+  display: none;
+  font-size: var(--tl-font-size-sm);
+  color: var(--tl-color-gray-400);
+  transition: transform var(--tl-transition-fast);
 }
 
 /* Submit section at bottom */
@@ -1670,7 +1771,7 @@
 }
 
 /* ============================================
-   Responsive Adjustments
+   Responsive Adjustments - Tablet
    ============================================ */
 @media (max-width: 768px) {
   .tl-stack-container {
@@ -1691,5 +1792,168 @@
     left: auto;
     transform: none;
     margin-top: var(--tl-spacing-md);
+  }
+}
+
+/* ============================================
+   Mobile Layout (Smartphone - 640px)
+   ============================================ */
+@media (max-width: 640px) {
+  /* Single column layout */
+  .tl-main-layout-2col {
+    grid-template-columns: 1fr;
+    gap: var(--tl-spacing-md);
+  }
+  
+  /* Language toggle - full width */
+  .tl-lang-section {
+    justify-content: center;
+    padding: var(--tl-spacing-sm) 0;
+  }
+  
+  /* Main content area */
+  .tl-configurator-content {
+    padding: var(--tl-spacing-md);
+    border-radius: var(--tl-radius-lg);
+  }
+  
+  /* Service header - stack vertically on very small screens */
+  .tl-service-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--tl-spacing-md);
+  }
+  
+  .tl-service-header-info {
+    width: 100%;
+  }
+  
+  /* Add button box - taller on mobile */
+  .tl-add-btn-box {
+    min-height: 180px;
+    padding: var(--tl-spacing-xl);
+  }
+  
+  .tl-add-btn-text {
+    font-size: var(--tl-font-size-lg);
+  }
+  
+  /* Size cards - vertical stack, taller */
+  .tl-size-cards {
+    grid-template-columns: 1fr;
+    gap: var(--tl-spacing-sm);
+  }
+  
+  .tl-size-card {
+    min-height: 80px;
+    padding: var(--tl-spacing-lg);
+  }
+  
+  /* Page visualization - smaller on mobile */
+  .tl-visual-stack-vertical {
+    max-width: 100%;
+  }
+  
+  .tl-visual-page-wrapper {
+    max-width: 100%;
+  }
+  
+  /* Sidebar - full width on mobile */
+  .tl-configurator-sidebar {
+    gap: var(--tl-spacing-sm);
+  }
+  
+  /* Summary panel - collapsible on mobile */
+  .tl-summary-panel-compact {
+    padding: var(--tl-spacing-sm) var(--tl-spacing-md);
+  }
+  
+  .tl-summary-header {
+    cursor: pointer;
+    padding: var(--tl-spacing-xs) 0;
+    margin-bottom: 0;
+  }
+  
+  .tl-summary-toggle-icon {
+    display: block;
+  }
+  
+  /* Collapsed state on mobile */
+  .tl-summary-panel-compact.is-collapsed .tl-summary-content {
+    display: none;
+  }
+  
+  .tl-summary-panel-compact.is-collapsed .tl-summary-toggle-icon {
+    transform: rotate(-90deg);
+  }
+  
+  .tl-summary-panel-compact:not(.is-collapsed) .tl-summary-header {
+    margin-bottom: var(--tl-spacing-sm);
+  }
+  
+  /* Extras section - full width cards */
+  .tl-extras-cards {
+    grid-template-columns: 1fr;
+    gap: var(--tl-spacing-md);
+  }
+  
+  .tl-extra-card {
+    padding: var(--tl-spacing-md);
+  }
+  
+  /* Scrollable extras container */
+  .tl-extras-scroll-container {
+    max-height: 50vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Action buttons - consistent */
+  .tl-action-buttons {
+    gap: var(--tl-spacing-sm);
+  }
+  
+  .tl-continue-btn,
+  .tl-contact-btn,
+  .tl-submit-btn {
+    height: 44px;
+    font-size: var(--tl-font-size-sm);
+  }
+  
+  /* Options section */
+  .tl-options-section {
+    padding: var(--tl-spacing-sm);
+  }
+  
+  /* Optional features list - horizontal scroll */
+  .tl-optional-features-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--tl-spacing-xs);
+  }
+  
+  .tl-optional-feature-btn {
+    flex: 0 0 auto;
+    padding: var(--tl-spacing-xs) var(--tl-spacing-sm);
+    font-size: var(--tl-font-size-xs);
+  }
+  
+  /* Compact service card */
+  .tl-service-card-compact {
+    padding: var(--tl-spacing-sm) var(--tl-spacing-md);
+  }
+  
+  .tl-service-card-compact .tl-service-icon-large {
+    font-size: 1rem;
+  }
+  
+  .tl-service-card-compact .tl-service-title {
+    font-size: var(--tl-font-size-sm);
+  }
+  
+  /* Badge positioning */
+  .tl-badge-popular {
+    font-size: 9px;
+    padding: 2px 6px;
   }
 }

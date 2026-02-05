@@ -80,11 +80,14 @@ export function createWireframeRenderer(rootElement, store, configData) {
               ${renderOptionalFeatures(state)}
             </div>
             
-            <!-- Summary Panel -->
+            <!-- Summary Panel (Collapsible on mobile) -->
             <div class="tl-summary-panel-compact" data-summary>
-              <h3 class="tl-summary-title-compact" data-i18n="summary.title">
-                ${t('summary.title', state.lang)}
-              </h3>
+              <button class="tl-summary-header" data-action="toggle-summary">
+                <span class="tl-summary-title-compact" data-i18n="summary.title">
+                  ${t('summary.title', state.lang)}
+                </span>
+                <span class="tl-summary-toggle-icon">▼</span>
+              </button>
               <div class="tl-summary-content" data-summary-content>
                 ${renderSummaryContent(state)}
               </div>
@@ -188,7 +191,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
     const name = webdesignService ? getLocalizedName(webdesignService, state.lang) : 'Web Design';
     const desc = webdesignService ? (state.lang === 'en' ? webdesignService.descriptionEn : webdesignService.description) : '';
     
-    // Step 1: Add - Show large Add button
+    // Step 1: Add - Show large outlined Add button box
     if (!isWebdesignSelected) {
       return `
         <div class="tl-main-panel">
@@ -202,8 +205,8 @@ export function createWireframeRenderer(rootElement, store, configData) {
             </div>
           </div>
           
-          <button type="button" class="tl-add-btn-large" data-action="toggle-service" data-service="webdesign">
-            <span>+ ${state.lang === 'de' ? 'Hinzufügen' : 'Add'}</span>
+          <button type="button" class="tl-add-btn-box" data-action="toggle-service" data-service="webdesign">
+            <span class="tl-add-btn-text">+ ${state.lang === 'de' ? 'Hinzufügen' : 'Add'}</span>
           </button>
         </div>
       `;
@@ -235,10 +238,11 @@ export function createWireframeRenderer(rootElement, store, configData) {
       `;
     }
     
-    // Step 3: Extras - Show "We also offer" section
+    // Step 3/4: Extras - Show "We also offer" section (no visualization)
     return `
       <div class="tl-main-panel">
-        <div class="tl-service-header">
+        <!-- Web Design Card (compact, no visualization) -->
+        <div class="tl-service-card-compact">
           <div class="tl-service-header-info">
             <span class="tl-service-icon-large">${webdesignService?.icon || '🌐'}</span>
             <div>
@@ -248,8 +252,10 @@ export function createWireframeRenderer(rootElement, store, configData) {
           </div>
         </div>
         
-        <!-- We also offer section -->
-        ${renderExtrasSection(state)}
+        <!-- We also offer section (scrollable on mobile) -->
+        <div class="tl-extras-scroll-container">
+          ${renderExtrasSection(state)}
+        </div>
       </div>
     `;
   }
