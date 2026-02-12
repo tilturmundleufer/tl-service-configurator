@@ -51,13 +51,15 @@
   grid-template-columns: 1fr 320px;
   gap: var(--tl-spacing-lg);
   min-height: 500px;
-  align-items: start;
+  max-height: 70vh;
+  align-items: stretch;
 }
 
 @media (max-width: 1024px) {
   .tl-main-layout-2col {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
+    max-height: none;
   }
 }
 
@@ -79,6 +81,11 @@
   height: 500px;
   max-height: 60vh;
   min-height: 400px;
+}
+
+/* Step 3: No scroll - visualization fully visible */
+[data-visual-step="3"] .tl-configurator-content {
+  overflow: hidden;
 }
 
 .tl-main-panel {
@@ -283,53 +290,97 @@
 }
 
 /* ============================================
-   Scroll Containers (for step 3 and step 4)
+   Scroll Containers (for step 4)
    ============================================ */
-.tl-extras-scroll-container,
-.tl-step3-scroll-container {
+.tl-extras-scroll-container {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
 }
 
-/* Step 3 main panel - fixed height to match step 4 */
+/* Step 3: Visualization container - no scroll, fit content */
 .tl-main-panel-step3 {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.tl-step3-scroll-container {
+.tl-step3-viz-container {
+  flex: 1;
+  min-height: 0;
   display: flex;
-  flex-direction: column;
-  gap: var(--tl-spacing-lg);
-  padding-right: var(--tl-spacing-sm);
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.tl-step3-viz-container .tl-visual-stack-area {
+  width: 100%;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tl-step3-viz-container .tl-visual-page-wrapper,
+.tl-step3-viz-container .tl-visual-stack-vertical {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.tl-step3-viz-container .tl-main-page-image,
+.tl-step3-viz-container .tl-addon-image {
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Scale visualization to fit without scroll */
+.tl-step3-viz-container .tl-visual-stack-vertical {
+  max-height: 100%;
+}
+
+/* Placeholder when no size selected */
+.tl-size-placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--tl-spacing-xl);
+}
+
+.tl-placeholder-text {
+  color: var(--tl-color-gray-500);
+  font-size: var(--tl-font-size-sm);
+  margin: 0;
 }
 
 /* ============================================
-   Inline Addons (inside main content in step 3)
+   Size Dropdown (sidebar)
    ============================================ */
-.tl-inline-addons {
-  margin-top: var(--tl-spacing-lg);
-  padding-top: var(--tl-spacing-lg);
-  border-top: 1px solid var(--tl-color-gray-200);
+.tl-size-dropdown-wrap {
+  padding-bottom: var(--tl-spacing-sm);
 }
 
-.tl-inline-addons-title {
-  font-size: var(--tl-font-size-base);
-  font-weight: 700;
+.tl-size-dropdown-label {
+  display: block;
+  font-size: var(--tl-font-size-sm);
+  font-weight: 600;
   color: var(--tl-color-text);
-  margin: 0 0 var(--tl-spacing-md);
+  margin: 0 0 var(--tl-spacing-xs);
 }
 
-.tl-inline-addons-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--tl-spacing-sm);
+.tl-size-dropdown {
+  width: 100%;
+  padding: var(--tl-spacing-sm) var(--tl-spacing-md);
+  font-size: var(--tl-font-size-sm);
+  border: 1px solid var(--tl-color-gray-200);
+  border-radius: var(--tl-radius-lg);
+  background: var(--tl-color-white);
+  cursor: pointer;
 }
 
-.tl-inline-addons-list .tl-addon-option {
-  flex: 0 0 auto;
+.tl-size-dropdown-section:empty {
+  display: none;
 }
 
 /* ============================================
@@ -664,12 +715,30 @@
   flex-direction: column;
   gap: var(--tl-spacing-md);
   align-self: stretch;
+  position: relative;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+/* Scrollable area in sidebar (everything except buttons) */
+.tl-sidebar-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tl-spacing-md);
+  min-height: 0;
 }
 
 .tl-options-sidebar {
   display: flex;
   flex-direction: column;
   gap: var(--tl-spacing-sm);
+}
+
+/* Empty state - hide if no content */
+.tl-options-sidebar:empty {
+  display: none;
 }
 
 .tl-summary-panel-compact {
@@ -709,9 +778,16 @@
   transition: transform var(--tl-transition-fast);
 }
 
-/* Submit section at bottom */
+/* Submit section - sticky at bottom */
 .tl-submit-section {
+  position: sticky;
+  bottom: 0;
+  background: var(--tl-color-white);
+  padding-top: var(--tl-spacing-md);
   margin-top: auto;
+  z-index: 10;
+  /* Fade effect at top */
+  box-shadow: 0 -10px 20px -5px rgba(255, 255, 255, 0.9);
 }
 
 .tl-no-addons {
@@ -1944,32 +2020,6 @@
   
   .tl-summary-panel-compact:not(.is-collapsed) .tl-summary-header {
     margin-bottom: var(--tl-spacing-sm);
-  }
-  
-  /* Step 3: Hide size cards, make content scrollable */
-  [data-visual-step="3"] .tl-size-cards {
-    display: none;
-  }
-  
-  /* Step 3 scroll container on mobile */
-  [data-visual-step="3"] .tl-step3-scroll-container {
-    max-height: none;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  /* Inline addons on mobile */
-  .tl-inline-addons {
-    margin-top: var(--tl-spacing-md);
-    padding-top: var(--tl-spacing-md);
-  }
-  
-  .tl-inline-addons-list {
-    flex-direction: column;
-  }
-  
-  .tl-inline-addons-list .tl-addon-option {
-    width: 100%;
   }
   
   /* Extras section - full width cards */

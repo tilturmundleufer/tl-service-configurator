@@ -84,30 +84,38 @@ export function createWireframeRenderer(rootElement, store, configData) {
           
           <!-- Right: Options + Summary Sidebar -->
           <aside class="tl-configurator-sidebar" data-sidebar>
-            <!-- Options Panel (Size + Addons) -->
-            <div class="tl-options-sidebar" data-options-sidebar>
-              ${renderOptionsSidebar(state)}
-            </div>
-            
-            <!-- Optional Features (appears after step 'extras') -->
-            <div class="tl-optional-features" data-optional-features>
-              ${renderOptionalFeatures(state)}
-            </div>
-            
-            <!-- Summary Panel (Collapsible on mobile) -->
-            <div class="tl-summary-panel-compact" data-summary>
-              <button class="tl-summary-header" data-action="toggle-summary">
-                <span class="tl-summary-title-compact" data-i18n="summary.title">
-                  ${t('summary.title', state.lang)}
-                </span>
-                <span class="tl-summary-toggle-icon">▼</span>
-              </button>
-              <div class="tl-summary-content" data-summary-content>
-                ${renderSummaryContent(state)}
+            <!-- Scrollable area (size dropdown, addons, optional features, summary) -->
+            <div class="tl-sidebar-scroll-area">
+              <!-- Size Dropdown (above addons, when webdesign selected) -->
+              <div class="tl-size-dropdown-section" data-size-dropdown>
+                ${renderSizeDropdown(state)}
+              </div>
+              
+              <!-- Additional Options (addons) - only in sidebar -->
+              <div class="tl-options-sidebar" data-options-sidebar>
+                ${renderOptionsSidebar(state)}
+              </div>
+              
+              <!-- Optional Features (appears after step 'extras') -->
+              <div class="tl-optional-features" data-optional-features>
+                ${renderOptionalFeatures(state)}
+              </div>
+              
+              <!-- Summary Panel (Collapsible on mobile) -->
+              <div class="tl-summary-panel-compact" data-summary>
+                <button class="tl-summary-header" data-action="toggle-summary">
+                  <span class="tl-summary-title-compact" data-i18n="summary.title">
+                    ${t('summary.title', state.lang)}
+                  </span>
+                  <span class="tl-summary-toggle-icon">▼</span>
+                </button>
+                <div class="tl-summary-content" data-summary-content>
+                  ${renderSummaryContent(state)}
+                </div>
               </div>
             </div>
             
-            <!-- Action Buttons (at bottom) -->
+            <!-- Action Buttons (sticky at bottom) -->
             <div class="tl-submit-section" data-submit-section>
               <div class="tl-validation-errors" data-validation-errors></div>
               ${renderActionButtons(state)}
@@ -226,12 +234,12 @@ export function createWireframeRenderer(rootElement, store, configData) {
       `;
     }
     
-    // Step 2: Configure - Show size cards (no size selected yet)
-    // Step 3: Visualization with addons inside (size selected)
+    // Step 2: Configure - No size yet (size dropdown is in sidebar)
+    // Step 3: Visualization only (size dropdown + addons in sidebar)
     if (state.currentStep === 'add' || state.currentStep === 'configure') {
       const hasSize = webdesignSelection?.size;
       
-      // Step 3: Size selected - show visualization + addons in scrollable area
+      // Step 3: Size selected - show visualization only (addons in sidebar)
       if (hasSize) {
         return `
           <div class="tl-main-panel tl-main-panel-step3">
@@ -248,22 +256,15 @@ export function createWireframeRenderer(rootElement, store, configData) {
               </button>
             </div>
             
-            <!-- Size Selection (hidden on mobile in step 3) -->
-            ${renderSizeCards(state)}
-            
-            <!-- Scrollable content area with visualization + addons -->
-            <div class="tl-step3-scroll-container">
-              <!-- Visualization -->
+            <!-- Visualization only - no size cards, no addons (both in sidebar) -->
+            <div class="tl-step3-viz-container">
               ${renderServiceVisualization(webdesignService, webdesignSelection, state)}
-              
-              <!-- Addons inside main content -->
-              ${renderInlineAddons(state)}
             </div>
           </div>
         `;
       }
       
-      // Step 2: No size yet - show size cards only
+      // Step 2: No size yet - header only (size dropdown in sidebar)
       return `
         <div class="tl-main-panel">
           <div class="tl-service-header">
@@ -279,8 +280,9 @@ export function createWireframeRenderer(rootElement, store, configData) {
             </button>
           </div>
           
-          <!-- Size Selection as Cards -->
-          ${renderSizeCards(state)}
+          <div class="tl-size-placeholder">
+            <p class="tl-placeholder-text">${state.lang === 'de' ? 'Wähle die Anzahl der Seiten' : 'Select number of pages'}</p>
+          </div>
         </div>
       `;
     }
@@ -308,32 +310,37 @@ export function createWireframeRenderer(rootElement, store, configData) {
   }
   
   /**
-   * Render size selection as cards
+   * Render size dropdown (sidebar, above Additional Options)
    * @param {Object} state - Current state
    * @returns {string} HTML string
    */
-  function renderSizeCards(state) {
+  function renderSizeDropdown(state) {
+    const isWebdesignSelected = selectors.isServiceSelected(state, 'webdesign');
+    if (!isWebdesignSelected) {
+      return '';
+    }
+    
     const sizes = configData.sizes['webdesign'] || [];
     const selection = state.selections['webdesign'];
     const selectedSize = selection?.size;
     
     return `
-      <div class="tl-size-cards">
-        ${sizes.map(size => {
-          const isSelected = selectedSize === size.slug;
-          const sizeName = getLocalizedName(size, state.lang);
-          const isPopular = size.slug === '5_pages';
-          
-          return `
-            <button class="tl-size-card ${isSelected ? 'is-selected' : ''}"
-                    data-action="set-size"
-                    data-size="${size.slug}"
-                    data-for-service="webdesign">
-              ${isPopular ? `<span class="tl-badge tl-badge-popular">${state.lang === 'de' ? 'Am beliebtesten' : 'Most popular'}</span>` : ''}
-              <span class="tl-size-card-label">${sizeName}</span>
-            </button>
-          `;
-        }).join('')}
+      <div class="tl-options-section tl-size-dropdown-wrap">
+        <label class="tl-size-dropdown-label" for="tl-size-select">
+          ${state.lang === 'de' ? 'Anzahl Seiten' : 'Number of pages'}
+        </label>
+        <select class="tl-size-dropdown" id="tl-size-select"
+                data-action="set-size-select"
+                data-for-service="webdesign">
+          ${sizes.map(size => {
+            const sizeName = getLocalizedName(size, state.lang);
+            return `
+              <option value="${size.slug}" ${selectedSize === size.slug ? 'selected' : ''}>
+                ${sizeName}
+              </option>
+            `;
+          }).join('')}
+        </select>
       </div>
     `;
   }
@@ -385,50 +392,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
   
   
   /**
-   * Render addons inline within the main content (for step 3)
-   * @param {Object} state - Current state
-   * @returns {string} HTML string
-   */
-  function renderInlineAddons(state) {
-    const selection = state.selections['webdesign'];
-    const addons = configData.addons['webdesign'] || [];
-    
-    if (!selection?.size) {
-      return '';
-    }
-    
-    // Get available (non-selected) addons
-    const availableAddons = addons.filter(addon => !selection.addons.has(addon.slug));
-    
-    if (availableAddons.length === 0) {
-      return '';
-    }
-    
-    return `
-      <div class="tl-inline-addons">
-        <h4 class="tl-inline-addons-title">${state.lang === 'de' ? 'Zusätzliche Optionen' : 'Additional Options'}</h4>
-        <div class="tl-inline-addons-list">
-          ${availableAddons.map(addon => {
-            const isDisabled = addon.requiresAddon && !selection.addons.has(addon.requiresAddon);
-            const addonName = getLocalizedName(addon, state.lang);
-            
-            return `
-              <button class="tl-addon-option ${isDisabled ? 'is-disabled' : ''}"
-                      data-action="toggle-addon"
-                      data-addon="${addon.slug}"
-                      data-for-service="webdesign"
-                      ${isDisabled ? 'disabled' : ''}>
-                <span>${addonName}</span>
-              </button>
-            `;
-          }).join('')}
-        </div>
-      </div>
-    `;
-  }
-  
-  /**
-   * Render options sidebar (Addons for webdesign - only in step 3, not step 4)
+   * Render options sidebar (addons - only in sidebar, never below main content)
    * @param {Object} state - Current state
    * @returns {string} HTML string
    */
@@ -451,7 +415,6 @@ export function createWireframeRenderer(rootElement, store, configData) {
     const availableAddons = selection ? addons.filter(addon => !selection.addons.has(addon.slug)) : addons;
     
     return `
-      <!-- Addons Section -->
       <div class="tl-options-section">
         <h4 class="tl-options-title">${state.lang === 'de' ? 'Zusätzliche Optionen' : 'Additional Options'}</h4>
         <div class="tl-addon-options" data-addon-options="webdesign">
@@ -850,6 +813,7 @@ export function createWireframeRenderer(rootElement, store, configData) {
   function cacheElements() {
     elements = {
       mainContent: rootElement.querySelector('[data-main-content]'),
+      sizeDropdown: rootElement.querySelector('[data-size-dropdown]'),
       optionsSidebar: rootElement.querySelector('[data-options-sidebar]'),
       optionalFeatures: rootElement.querySelector('[data-optional-features]'),
       summary: rootElement.querySelector('[data-summary]'),
@@ -929,7 +893,12 @@ export function createWireframeRenderer(rootElement, store, configData) {
       elements.mainContent.innerHTML = renderMainContent(state);
     }
     
-    // Update options sidebar
+    // Update size dropdown
+    if (elements.sizeDropdown) {
+      elements.sizeDropdown.innerHTML = renderSizeDropdown(state);
+    }
+    
+    // Update options sidebar (addons)
     if (elements.optionsSidebar) {
       elements.optionsSidebar.innerHTML = renderOptionsSidebar(state);
     }

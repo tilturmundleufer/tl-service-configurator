@@ -26,6 +26,9 @@ export function createEventHandlers(rootElement, store, configData, onSubmit) {
     // Main click delegation
     rootElement.addEventListener('click', handleClick);
     
+    // Change delegation (for select dropdowns)
+    rootElement.addEventListener('change', handleChange);
+    
     // Keyboard navigation
     rootElement.addEventListener('keydown', handleKeydown);
     
@@ -120,6 +123,22 @@ export function createEventHandlers(rootElement, store, configData, onSubmit) {
       case 'toggle-summary':
         handleToggleSummary(actionElement);
         break;
+    }
+  }
+  
+  /**
+   * Handle change events (select dropdowns)
+   * @param {Event} event - Change event
+   */
+  function handleChange(event) {
+    const el = event.target;
+    const action = el.dataset?.action;
+    if (action === 'set-size-select') {
+      const sizeSlug = el.value;
+      const serviceSlug = el.dataset.forService;
+      if (sizeSlug && serviceSlug && selectors.isServiceSelected(store.getState(), serviceSlug)) {
+        store.dispatch(actions.setSize(serviceSlug, sizeSlug));
+      }
     }
   }
   
@@ -418,6 +437,7 @@ export function createEventHandlers(rootElement, store, configData, onSubmit) {
    */
   function destroy() {
     rootElement.removeEventListener('click', handleClick);
+    rootElement.removeEventListener('change', handleChange);
     rootElement.removeEventListener('keydown', handleKeydown);
     clearTimeout(inactivityTimer);
     clearTimeout(suggestionTimer);
