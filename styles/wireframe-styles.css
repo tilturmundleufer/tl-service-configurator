@@ -45,10 +45,11 @@
 
 /* ============================================
    2-Column Main Layout (No left tabs)
+   Left (visualization) deutlich größer als rechte Sidebar
    ============================================ */
 .tl-main-layout-2col {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 320px);
   gap: var(--tl-spacing-lg);
   min-height: 500px;
   max-height: 70vh;
@@ -78,9 +79,9 @@
 /* Fixed height for step 3 and step 4 (matching heights) */
 [data-visual-step="3"] .tl-configurator-content,
 [data-visual-step="4"] .tl-configurator-content {
-  height: 500px;
-  max-height: 60vh;
-  min-height: 400px;
+  height: 520px;
+  max-height: 65vh;
+  min-height: 450px;
 }
 
 /* Step 3: No scroll - visualization fully visible */
@@ -91,7 +92,14 @@
 .tl-main-panel {
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Consistent 16px gap */
+  gap: 12px;
+}
+
+/* Step 3: Header kompakter für mehr Platz für Visualisierung */
+.tl-main-panel-step3 .tl-service-header {
+  padding-bottom: 12px;
+  margin-bottom: 0;
+  flex-shrink: 0;
 }
 
 /* Legacy 3-Column (kept for compatibility) */
@@ -312,31 +320,64 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  padding: var(--tl-spacing-sm) 0;
 }
 
 .tl-step3-viz-container .tl-visual-stack-area {
   width: 100%;
+  height: 100%;
   max-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
-.tl-step3-viz-container .tl-visual-page-wrapper,
 .tl-step3-viz-container .tl-visual-stack-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   max-width: 100%;
   max-height: 100%;
+  flex-shrink: 1;
+  min-height: 0;
 }
 
-.tl-step3-viz-container .tl-main-page-image,
-.tl-step3-viz-container .tl-addon-image {
+/* Page-Wrapper: nimmt verfügbaren Platz, Bild skaliert darin */
+.tl-step3-viz-container .tl-visual-page-wrapper {
+  max-width: 100%;
   max-height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Bild vollständig sichtbar - object-fit contain skaliert ins Wrapper */
+.tl-step3-viz-container .tl-main-page-image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.tl-step3-viz-container .tl-addon-image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
 }
 
-/* Scale visualization to fit without scroll */
-.tl-step3-viz-container .tl-visual-stack-vertical {
-  max-height: 100%;
+/* Analytics unter dem Bild - schrumpft bei Platzmangel */
+.tl-step3-viz-container .tl-addon-section-vertical {
+  flex-shrink: 1;
+  min-height: 0;
+  max-width: 100%;
 }
 
 /* Placeholder when no size selected */
