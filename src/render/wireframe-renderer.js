@@ -154,9 +154,12 @@ export function createWireframeRenderer(rootElement, store, configData) {
         </div>
       `;
     } else {
-      // Show "Contact Us" above "Submit" button in extras/complete step
+      // Last step: Back, Contact, Submit
       return `
         <div class="tl-action-buttons">
+          <button class="tl-back-btn" data-action="prev-step">
+            <span>${state.lang === 'de' ? 'Zurück' : 'Back'}</span>
+          </button>
           <button class="tl-contact-btn" data-action="contact">
             <span>${state.lang === 'de' ? 'Kontakt' : 'Contact Us'}</span>
           </button>
