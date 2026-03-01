@@ -1,32 +1,32 @@
 /**
- * Turm & Leufer Service Configurator Styles
- * Angepasst an turmundleufer.de: Weiß/Schwarz/Blau, klare Typografie
+ * Configurator Styles
+ * Hell, Weiß und Grau mit grünen Akzenten (Textilguru-Style)
  */
 
 /* ============================================
-   CSS Custom Properties (Variables) – Turm & Leufer Brand
+   CSS Custom Properties (Variables)
    ============================================ */
 :root {
-  /* Brand Colors – wie turmundleufer.de */
-  --tl-color-primary: #3B82F6;
-  --tl-color-primary-dark: #2563eb;
-  --tl-color-primary-light: #60a5fa;
-  --tl-color-primary-alpha: rgba(59, 130, 246, 0.08);
+  /* Brand Colors – Grün wie Textilguru */
+  --tl-color-primary: #16a34a;
+  --tl-color-primary-dark: #15803d;
+  --tl-color-primary-light: #22c55e;
+  --tl-color-primary-alpha: rgba(22, 163, 74, 0.08);
   
-  /* Neutrals – klare Kontraste */
+  /* Neutrals – Hell, Weiß, Grau */
   --tl-color-white: #ffffff;
-  --tl-color-black: #0f172a;
-  --tl-color-gray-50: #fafafa;
-  --tl-color-gray-100: #f4f4f5;
-  --tl-color-gray-200: #e4e4e7;
-  --tl-color-gray-300: #d4d4d8;
-  --tl-color-gray-400: #a1a1aa;
-  --tl-color-gray-500: #71717a;
-  --tl-color-gray-600: #52525b;
-  --tl-color-gray-700: #3f3f46;
-  --tl-color-gray-800: #27272a;
-  --tl-color-gray-900: #18181b;
-  --tl-color-text: #212121;
+  --tl-color-black: #1a1a1a;
+  --tl-color-gray-50: #f9fafb;
+  --tl-color-gray-100: #f3f4f6;
+  --tl-color-gray-200: #e5e7eb;
+  --tl-color-gray-300: #d1d5db;
+  --tl-color-gray-400: #9ca3af;
+  --tl-color-gray-500: #6b7280;
+  --tl-color-gray-600: #4b5563;
+  --tl-color-gray-700: #374151;
+  --tl-color-gray-800: #1f2937;
+  --tl-color-gray-900: #111827;
+  --tl-color-text: #374151;
   
   /* Feedback Colors */
   --tl-color-success: #10b981;
@@ -46,7 +46,7 @@
   --tl-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
   --tl-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.08);
   --tl-shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.1);
-  --tl-shadow-glow: 0 0 0 1px rgba(59, 130, 246, 0.2);
+  --tl-shadow-glow: 0 0 0 1px rgba(22, 163, 74, 0.2);
   
   /* Spacing */
   --tl-spacing-xs: 0.25rem;
